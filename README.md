@@ -90,7 +90,7 @@ Request URL - `public/experiments/sponge/viz`
 
 Response - Image
 
-Request URL - `/private/experiment/beta_binomial` (Create New Experiment)
+Request URL - `/private/experiment/beta_binomial` `POST` (Create New Experiment)
 Request Modal -
 ```
 {
@@ -102,4 +102,3 @@ Request Modal -
   ]
 }
 ```
-Response - None
