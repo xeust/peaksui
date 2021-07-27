@@ -1,0 +1,6 @@
+.deta/*
+.vscode/*
+svelte/node_modules/
+svelte/public/build/
+svelte/.DS_Store
+svelte/package-lock.json
