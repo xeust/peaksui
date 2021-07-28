@@ -65,7 +65,7 @@
           <div class="tag">sampling</div>
           <div class="random">
             <div class="req-info">
-              send a GET request to the following URL to sample a random option:
+              send a GET request to the following URL to sample an option:
             </div>
             <div class="inline-code" tabindex="0">
               {window.location

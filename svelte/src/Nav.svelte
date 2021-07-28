@@ -23,11 +23,10 @@
       </svg>
       
     </a>
-    <div class="header-text">peaks</div>
+    <div class="header-text" on:click={()=> {window.location.href = `/`}}>peaks</div>
   </div>
 
   <div class="nav-btn-rows">
-    <a class="nav-sec-btn link" href="/docs" tabindex="0"> docs </a>
     <a
       class="nav-sec-btn link"
       on:click={() => (window.location.href = window.location.origin)} href="/" tabindex="0"

@@ -14,6 +14,7 @@
 
   const open = () => {
     isOpen = true;
+    console.log(document.activeElement.blur());
   };
   const close = () => {
     isOpen = false;
@@ -108,8 +109,7 @@
         <div class="modal-form-row">
           <div class="label">type</div>
           <select bind:value={newExperiment.type}>
-            <option value="binary"> binary</option>
-            <option value="continuous"> continuous</option>
+            <option value="BINARY"> binary</option>
           </select>
         </div>
         <div class="options">options</div>
@@ -142,9 +142,9 @@
             - option
           </button>
         </div>
-        <code class="error-msg">
+        <div class="error-msg">
           {errMsg}
-        </code>
+        </div>
 
         <div class="modal-buttons">
           <button class="cta-button" on:click={createHandler}> create </button>
@@ -181,15 +181,13 @@
   .header-text {
     font-size: 36px;
     font-weight: 400;
-
   }
 
   .error-msg {
-    font-family: sans-serif;
     font-size: 18px;
     font-weight: 700;
     color: var(--r1);
-    padding-top: 2rem;
+    padding-top: 1rem;
   }
   .modal-tag {
     font-size: 36px;
@@ -215,7 +213,7 @@
   }
   .modal-buttons {
     display: flex;
-    margin-top: 2rem;
+    margin-top: 1rem;
     justify-content: flex-end;
     gap: 1rem;
   }
@@ -331,6 +329,7 @@
       width: 400px;
       height: 340px;
     }
+
   }
   @media (max-width: 460px) {
     .modal-wrapper {
@@ -343,6 +342,7 @@
       padding-left: 24px;
     }
   }
+
   @media (max-width: 500px) {
     :global(body) {
       width: 95vw;
@@ -359,14 +359,18 @@
     .modal-buttons {
       justify-content: center;
     }
-    .label{
-      margin-bottom: 0.5rem;
+    .label {
+      margin-bottom: 0.25rem;
     }
     .sec-label {
       margin-bottom: 0.5rem;
     }
     .options-tools {
       margin-top: 0.5rem;
+    }
+    .modal-form-row {
+      gap: 1rem;
+      margin-bottom: 0.5rem;
     }
   }
 </style>

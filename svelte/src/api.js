@@ -75,7 +75,7 @@ export const codeSnippet = (expName, armName) => {
 export const defaultExp = () => {
   return {
     key: "",
-    type: "binary",
+    type: "BINARY",
     owner_name: "",
     interventions: [
       { intervention_name: "", num_played: 0, num_successes: 0 },
