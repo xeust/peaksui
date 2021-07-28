@@ -50,7 +50,7 @@
 <main>
   {#await expsPromise}
     <Nav />
-    <code>Loading...</code>
+    <code class="loading">Loading...</code>
   {:then exps}
     <Nav />
     <div class="header">
@@ -65,7 +65,7 @@
     </div>
   {:catch error}
     <Nav />
-    <code> Failed to fetch experiments. Please try reloading the page. </code>
+    <code class="loading"> Failed to fetch experiments. Please try reloading the page. </code>
   {/await}
 
   <DialogOverlay
