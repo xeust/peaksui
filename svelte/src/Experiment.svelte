@@ -28,7 +28,7 @@
 <main>
   {#await promise}
     <Nav />
-    <code>Loading</code>
+    <code class="loading">Loading</code>
   {:then exp}
     <Nav />
     <div class="exp">

@@ -21,7 +21,7 @@
     :root {
     --color-bg: #fafafa;
     --p0: #63678B;
-    --p1: #676FB5;
+    --p1: #7287ff;
     --z0:#2B2E4A;
     --z1: #515368;
     --z2: #7C7D83;
@@ -73,6 +73,13 @@
   :global(.link:hover) {
     cursor: pointer;
     text-decoration: underline;
+  }
+  :global(.loading) {
+    font-size: 24px;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
   }
 
 </style>
