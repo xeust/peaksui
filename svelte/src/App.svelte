@@ -21,7 +21,7 @@
     :root {
     --color-bg: #fafafa;
     --p0: #63678B;
-    --p1: #7287ff;
+    --p1: #6a84f1f2;
     --z0:#2B2E4A;
     --z1: #515368;
     --z2: #7C7D83;
@@ -80,6 +80,18 @@
     height: 100%;
     display: grid;
     place-items: center;
+  }
+  :global(.code) {
+    font-family: monospace;
+    background-color: #ffffff;
+    border: 1px solid var(--p0);
+    color: var(--z2);
+    box-sizing: border-box;
+    border-radius: 5px;
+  }
+  :global(.code:focus) {
+    border: 1px solid var(--p1);
+    color: var(--z0);
   }
 
 </style>

@@ -67,7 +67,7 @@
             <div class="req-info">
               send a GET request to the following URL to sample an option:
             </div>
-            <div class="inline-code" tabindex="0">
+            <div class="code inline-code" tabindex="0">
               {window.location
                 .origin}/public/experiments/{exp.key}/get_intervention
             </div>
@@ -75,7 +75,7 @@
               send a GET request to the following URL to get the current optimal
               arm:
             </div>
-            <div class="inline-code" tabindex="0">
+            <div class="code inline-code" tabindex="0">
               {window.location.origin}/public/experiments/{exp.key}/best_arm
             </div>
           </div>
@@ -107,7 +107,7 @@
             <div />
             <div>
               <div class="code-snippet" tabindex="0">
-                <pre><code class="code" id ="snippet">
+                <pre><code class="code snippet" id ="snippet">
                   {codeSnippet(exp.key, selected)}
                 </code></pre>
               </div>
@@ -200,18 +200,8 @@
     color: var(--z1);
   }
   .inline-code {
-    font-family: monospace;
-    background-color: #ffffff;
     padding: 0.5rem;
-    border: 1px solid var(--p0);
-    color: var(--z2);
-    box-sizing: border-box;
-    border-radius: 5px;
     overflow-wrap: break-word;
-  }
-  .inline-code:focus {
-    border: 1px solid var(--p1);
-    color: var(--z0);
   }
 
   .options {
@@ -228,9 +218,7 @@
     width: 422px;
     color: var(--z1);
   }
-  code {
-    color: var(--z1);
-  }
+
   a {
     color: var(--p1);
   }
@@ -251,17 +239,26 @@
     width: 422px;
     height: auto;
     border: 1px solid var(--p0);
+    background-color: #ffffff;
     box-sizing: border-box;
     border-radius: 5px;
     padding: 1rem 1rem 1rem;
     overflow-wrap: break-word;
   }
+  .code-snippet:focus {
+    border: 1px solid var(--p1);
+  }
+  .code-snippet:focus .snippet{
+    color: var(--z0);
+  }
   select {
     margin: 0rem;
   }
-  .code {
+  .snippet {
     white-space: pre-wrap;
+    border: none
   }
+
   @media (min-width: 708px) {
     .small-screen {
       display: inherit;
