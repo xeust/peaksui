@@ -22,7 +22,7 @@
 
   let expsPromise = expList();
 
-  async function createHandler() {
+  const createHandler = async () => {
     if (!validateCreate(newExperiment)) {
       errMsg = "Empty fields. Please try again.";
       return;
@@ -31,7 +31,6 @@
     if (res.status === 200) {
       errMsg = "";
       const name = newExperiment.key;
-      newExperiment = defaultExp();
       window.location.href = `/experiment/${name}`;
       return;
     }
@@ -39,11 +38,17 @@
     return;
   }
 
-  function addOption() {
+  const addOption = () => {
     let newOptions = newExperiment.interventions;
     newOptions.push({ intervention_name: "", num_played: 0, num_successes: 0 });
     newExperiment.interventions = newOptions;
-    console.log(newExperiment.interventions);
+  }
+  
+  const removeOption = () => {
+    newExperiment.interventions = newExperiment.interventions.filter(
+      (element, index) =>
+        index < newExperiment.interventions.length - 1
+    );
   }
 </script>
 
@@ -98,7 +103,7 @@
       <div class="modal-wrapper">
         <div class="modal-tag">create an experiment</div>
 
-        <div class="modal-form-row">
+        <div class="modal-title-row">
           <div class="label">name</div>
           <input
             class="name-input"
@@ -106,11 +111,15 @@
             placeholder="experiment name"
           />
         </div>
-        <div class="modal-form-row">
+        <div class="modal-title-row">
           <div class="label">type</div>
           <select bind:value={newExperiment.type}>
             <option value="BINARY"> binary</option>
           </select>
+        </div>
+        <div>
+        This is a description of a binary experiment. A binary experiment is one where all this interesting stuff happens.
+        This description spans multiple lines.
         </div>
         <div class="options">options</div>
 
@@ -131,13 +140,7 @@
           <button class="add-option" on:click={addOption}>+ option</button>
           <button
             class="remove-option"
-            on:click={() => {
-              newExperiment.interventions = newExperiment.interventions.filter(
-                (element, index) =>
-                  index < newExperiment.interventions.length - 1
-              );
-              console.log(newExperiment.interventions);
-            }}
+            on:click={removeOption}
           >
             - option
           </button>
@@ -195,10 +198,20 @@
     color: var(--z0);
     margin-bottom: 2rem;
   }
+  .modal-title-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
   .modal-form-row {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .label {
@@ -291,6 +304,8 @@
     border-radius: 5px;
     align-self: center;
     outline: none;
+    padding-left: 8px;
+    padding-right: 8px;
   }
   input:focus {
     border: 1px solid var(--p1);

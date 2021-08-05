@@ -2,25 +2,20 @@ from fastapi import FastAPI, Request, Body
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import RedirectResponse, FileResponse
 from fastapi.responses import StreamingResponse
-from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from typing import List
 
 
 
-
-
 app = FastAPI()
 
-app.mount("/build", StaticFiles(directory="svelte/public", html=True), name="build")
+app.mount("/svelte", StaticFiles(directory="svelte/public", html=True), name="build")
 
 class NewExp(BaseModel):
     key: str
     owner_name: str
     type: str
     interventions: List[dict]
-
-templates = Jinja2Templates(directory="svelte/public")
 
 exps = [
     [
@@ -140,5 +135,5 @@ def create_exp(request: Request, exp: NewExp):
 
 @app.get("/{full_path:path}")
 def render_svelte(request: Request, full_path: str):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return FileResponse("svelte/public/index.html")
 

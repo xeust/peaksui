@@ -38,6 +38,9 @@
   :global(.sec-text) {
     color: var(--z2);
   }
+  :global(.body) {
+    color: var(--z1);
+  }
   :global(button) {
     padding: 0rem 0.5rem 0rem;
     width: 120px;
