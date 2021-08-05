@@ -96,7 +96,7 @@
               </div>
               <div class="info">
                 {selected} has a {armProbability(exp.interventions, selected)}%
-                probability of maximizing click through rate.
+                probability of success.
               </div>
               <div class="info">
                 To update your experiment with a successful trial of option ‘{selected}’,
