@@ -38,9 +38,6 @@
   :global(.sec-text) {
     color: var(--z2);
   }
-  :global(.body) {
-    color: var(--z1);
-  }
   :global(button) {
     padding: 0rem 0.5rem 0rem;
     width: 120px;
@@ -72,6 +69,7 @@
     font-size: 14px;
     font-weight: 400;
     color: var(--p1);
+    text-decoration: none;
   }
   :global(.link:hover) {
     cursor: pointer;

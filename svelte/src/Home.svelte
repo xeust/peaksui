@@ -165,6 +165,7 @@
     max-width: 992px;
     margin: 20px auto;
     padding: 0 10px;
+    color: var(--z1);
   }
   .card-wrapper {
     display: grid;
@@ -262,7 +263,7 @@
     font-size: 24px;
     margin-top: 2rem;
     margin-bottom: 1rem;
-    color: var(--z1);
+    color: var(--z0);
   }
   .cta-button {
     color: #ffffff;
