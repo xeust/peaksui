@@ -27,6 +27,8 @@ To make changes to the app locally, you will do so in the context of a FastAPI s
 
 Create a virtual environment in the root directory locally `python3 -m venv .venv`.
 
+Activate this vitrual environment with `source .venv/bin/activate`.
+
 Install the dependencies for the virtual environment with `pip install -r requirements.txt`.
 
 To make changes to the frontend, enter the `svelte` directory and start the development server with `npm run dev`. (You may need to run `npm run i` first).
