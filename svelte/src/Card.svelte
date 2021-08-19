@@ -10,11 +10,11 @@
 <div class="card-border" on:click={goToExp} >
   <div class="content">
     <div class="fig">
-      <img src={`${window.location.origin}/public/experiments/${exp.key}/viz`} alt={exp.key} />
+      <img src={`${window.location.origin}/private/experiments/${exp.key}/viz`} alt={exp.key} />
     </div>
     <div class="info">
       <div class="name">
-        {exp.key}
+        {exp.name}
       </div>
       <div class="stats">
         <div>

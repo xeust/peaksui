@@ -13,7 +13,10 @@ const sumSuccesses = (interventions) => {
 export const armProbability = (interventions, intervention_name) => {
   for (const intervention of interventions) {
     if (intervention_name === intervention.intervention_name) {
-      return intervention.num_successes/ intervention.num_played;
+      if (intervention.num_played >= 100) {
+        return (intervention.num_successes/ intervention.num_played)*100;
+      }
+      return null;
     }
   }
 }
@@ -43,9 +46,11 @@ export const createExp = async (exp) => {
 };
 
 export const getExperiment = async (expName) => {
-  const res = await fetch(`../private/experiment/${expName}`);
+  const res = await fetch(`../private/experiments/${expName}`);
+  console.log(res.body);
   if (res.status === 200) {
     const exp = await res.json();
+    console.log(exp);
     exp.trials = sumTrials(exp.interventions);
     exp.successes = sumSuccesses(exp.interventions);
     exp.arms = exp.interventions.length;
@@ -58,7 +63,7 @@ export const getExperiment = async (expName) => {
 
 export const codeSnippet = (expName, armName) => {
   const snippet = 
-  `fetch("${window.location.origin}/public/experiments/${expName}/update", {
+  `fetch("${window.location.origin}/public/experiments/update", {
     method: "POST",
     body: JSON.stringify({
       key: "${expName}",
@@ -74,9 +79,11 @@ export const codeSnippet = (expName, armName) => {
 
 export const defaultExp = () => {
   return {
-    key: "",
     type: "BINARY",
+    id_consistency: false,
+    experiment_type: "beta_binomial",
     owner_name: "",
+    was_updated: false,
     interventions: [
       { intervention_name: "", num_played: 0, num_successes: 0 },
       { intervention_name: "", num_played: 0, num_successes: 0 },
@@ -84,4 +91,13 @@ export const defaultExp = () => {
   };
 };
 
-
+export const getSampling = async (key, user_id=null) => {
+  const url = user_id ? `../public/experiments/${key}/get_intervention?user_id=${user_id}` : `../public/experiments/${key}/get_intervention`
+  console.log(url);
+  const res = await fetch(url);
+  if (res.status == 200) {
+    const sampledValue = await res.json();
+    return sampledValue;
+  }
+  throw new Error("Failed to sample option. Please try again.");
+}

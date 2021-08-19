@@ -29,10 +29,11 @@
     }
     const res = await createExp(newExperiment);
     if (res.status === 200) {
-      errMsg = "";
-      const name = newExperiment.key;
-      window.location.href = `/experiment/${name}`;
-      return;
+          errMsg = "";
+          const bod = await res.json();
+          const name = bod.key;  
+          window.location.href = `/experiment/${name}`;
+          return;
     }
     errMsg = "Failed to create a new experiment.";
     return;
@@ -107,7 +108,7 @@
           <div class="label">name</div>
           <input
             class="name-input"
-            bind:value={newExperiment.key}
+            bind:value={newExperiment.name}
             placeholder="experiment name"
           />
         </div>
@@ -117,10 +118,19 @@
             <option value="BINARY"> binary</option>
           </select>
         </div>
+
         <div>
         This is a description of a binary experiment. A binary experiment is one where all this interesting stuff happens.
         This description spans multiple lines.
         </div>
+        <div class="modal-title-row">
+          <div class="label">id_consistency</div>
+          <input bind:value={newExperiment.id_consistency} type="checkbox" id="id_consistency" name="id_consistency">
+        </div>
+        <div>
+          This is a description of a id_consistency. A id_consistency is one where all this interesting stuff happens.
+          This description spans multiple lines.
+          </div>
         <div class="options">options</div>
 
         <div id="options-grid">

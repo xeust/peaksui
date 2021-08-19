@@ -12,84 +12,111 @@ app = FastAPI()
 app.mount("/svelte", StaticFiles(directory="svelte/public", html=True), name="build")
 
 class NewExp(BaseModel):
-    key: str
+    name: str
     owner_name: str
+    id_consistency: bool
     type: str
+    was_updated: bool
+    experiment_type: str
     interventions: List[dict]
 
 exps = [
-    [
+  [
+    {
+      "experiment_type": "beta_binomial",
+      "id_consistency": False,
+      "interventions": [
         {
-            "interventions": [
-                {
-                    "intervention_name": "1234",
-                    "num_played": 1,
-                    "num_successes": 0
-                },
-                {
-                    "intervention_name": "1234",
-                    "num_played": 1,
-                    "num_successes": 0
-                }
-            ],
-            "key": "1234",
-            "owner_name": "thomas"
-        },
-        {
-            "interventions": [
-                {
-                    "intervention_name": "1234",
-                    "num_played": 1,
-                    "num_successes": 0
-                },
-                {
-                    "intervention_name": "1234",
-                    "num_played": 1,
-                    "num_successes": 0
-                }
-            ],
-            "key": "12365",
-            "owner_name": "thomas"
-        },
-        {
-            "interventions": [
-                {
-                    "intervention_name": "string",
-                    "num_played": 0,
-                    "num_successes": 0
-                }
-            ],
-            "key": "sponge",
-            "owner_name": "string"
-        },
-        {
-            "interventions": [
-                {
-                    "intervention_name": "sponge",
-                    "num_played": 0,
-                    "num_successes": 0
-                }
-            ],
-            "key": "string",
-            "owner_name": "d"
-        },
-        {
-            "interventions": [
-                {
-                    "intervention_name": "blue",
-                    "num_played": 1,
-                    "num_successes": 0
-                },
-                {
-                    "intervention_name": "red",
-                    "num_played": 1,
-                    "num_successes": 0
-                }
-            ],
-            "key": "test",
-            "owner_name": "thomas"
+          "intervention_name": "string",
+          "num_played": 0,
+          "num_successes": 0
         }
-    ]
+      ],
+      "key": "2m85jguxj2qg",
+      "name": "string",
+      "owner_name": "string",
+      "type": "binary",
+      "was_updated": False
+    },
+    {
+      "experiment_type": "beta_binomial",
+      "id_consistency": False,
+      "interventions": [
+        {
+          "intervention_name": "a",
+          "num_played": 4,
+          "num_successes": 3
+        },
+        {
+          "intervention_name": "b",
+          "num_played": 4,
+          "num_successes": 1
+        },
+        {
+          "intervention_name": "c",
+          "num_played": 3,
+          "num_successes": 3
+        }
+      ],
+      "key": "9roqxa7ew51a",
+      "name": "test experiment 1",
+      "owner_name": "",
+      "type": "BINARY",
+      "was_updated": False
+    },
+    {
+      "experiment_type": "beta_binomial",
+      "id_consistency": True,
+      "interventions": [
+        {
+          "intervention_name": "a",
+          "num_played": 0,
+          "num_successes": 0
+        },
+        {
+          "intervention_name": "b",
+          "num_played": 0,
+          "num_successes": 0
+        },
+        {
+          "intervention_name": "c",
+          "num_played": 0,
+          "num_successes": 0
+        }
+      ],
+      "key": "bbgxzfxbjyk4",
+      "name": "string",
+      "owner_name": "string",
+      "type": "binary",
+      "was_updated": False
+    },
+    {
+      "experiment_type": "beta_binomial",
+      "id_consistency": False,
+      "interventions": [
+        {
+          "intervention_name": "a",
+          "num_played": 0,
+          "num_successes": 0
+        },
+        {
+          "intervention_name": "b",
+          "num_played": 0,
+          "num_successes": 0
+        },
+        {
+          "intervention_name": "c",
+          "num_played": 0,
+          "num_successes": 0
+        }
+      ],
+      "key": "f88ydslgfxru",
+      "name": "string",
+      "owner_name": "string",
+      "type": "binary",
+      "was_updated": False
+    }
+  ]
 ]
 
 @app.get("/sponge")
@@ -100,28 +127,31 @@ def sponge():
 def get_experiments():
     return exps
 
-@app.get("/private/experiment/{key}")
+@app.get("/private/experiments/{key}")
 def get_exp(key: str):
     return {
-            "interventions": [
+      "experiment_type": "beta_binomial",
+      "id_consistency": True,
+      "interventions": [
+        {
+          "intervention_name": "string",
+          "num_played":100,
+          "num_successes": 20
+        },
                 {
-                    "intervention_name": "blue",
-                    "num_played": 1,
-                    "num_successes": 0
-                },
-                {
-                    "intervention_name": "red",
-                    "num_played": 1,
-                    "num_successes": 0
-                }
-            ],
-            "suggested_arm": "blue",
-            "type": "binary",
-            "key": "test",
-            "owner_name": "thomas"
+          "intervention_name": "red",
+          "num_played":100,
+          "num_successes": 30
         }
+      ],
+      "key": "2m85jguxj2qg",
+      "name": "string",
+      "owner_name": "string",
+      "type": "binary",
+      "was_updated": False
+    }
 
-@app.get("/public/experiments/{name}/viz")
+@app.get("/private/experiments/{name}/viz")
 def get_viz(name: str):
     def iterfile():  
         with open("./fig.png", mode="rb") as file_like:  
@@ -131,7 +161,26 @@ def get_viz(name: str):
 @app.post("/private/experiment/beta_binomial")
 def create_exp(request: Request, exp: NewExp):
     exps[0].append(exp.dict())
-    print(exp)
+    return {
+      "experiment_type": "beta_binomial",
+      "id_consistency": True,
+      "interventions": [
+        {
+          "intervention_name": "string",
+          "num_played": 0,
+          "num_successes": 0
+        }
+      ],
+      "key": "2m85jguxj2qg",
+      "name": "string",
+      "owner_name": "string",
+      "type": "binary",
+      "was_updated": False
+    }
+
+@app.get("/public/experiments/{key}/get_intervention")
+def get_intervention(key: str):
+    return "blue"
 
 @app.get("/{full_path:path}")
 def render_svelte(request: Request, full_path: str):

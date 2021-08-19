@@ -1,5 +1,5 @@
 export const validateCreate = (newExperiment) => {
-  if (newExperiment.key === "") {
+  if (newExperiment.name === "") {
     return false;
   }
   for (const option of newExperiment.interventions) {

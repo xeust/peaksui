@@ -1,13 +1,14 @@
 <script>
-  import { getExperiment, codeSnippet, armProbability } from "./api.js";
+  import { getExperiment, codeSnippet, armProbability, getSampling } from "./api.js";
 
   import Nav from "./Nav.svelte";
 
   export let key;
   let copySnippetStatus = "copy snippet";
+  let sampleValue = "try it out!";
+  let userId = "";
   let promise = getExperiment(key);
   let selected;
-
   async function copySnippet() {
     const snippet = document.getElementById("snippet").innerHTML;
     try {
@@ -23,6 +24,20 @@
       }, 3000);
     }
   }
+  async function sample(key, id_consistency) {
+    try {
+      sampleValue = id_consistency ? await getSampling(key, userId) : await getSampling(key);
+      setTimeout(function () {
+          sampleValue = "try it out!";
+      }, 3000);
+    } catch(error) {
+      sampleValue = "failed to sample option. try again"
+      setTimeout(function () {
+          sampleValue = "try it out!";
+      }, 3000);
+    }
+
+  }
 </script>
 
 <main>
@@ -33,7 +48,7 @@
     <Nav />
     <div class="exp">
       <div class="exp-title">
-        {key}
+        {exp.name}
       </div>
       <div class="exp-sum-tag tag">summary</div>
       <div class="exp-sum">
@@ -41,25 +56,21 @@
           <!-- Image content -->
           <div class="fig">
             <img
-              src={`${window.location.origin}/public/experiments/${exp.key}/viz`}
+              src={`${window.location.origin}/private/experiments/${exp.key}/viz`}
               alt={key}
             />
           </div>
-          <a class="link large-screen" href={`${window.location.origin}/public/experiments/${exp.key}/viz`}> open image in new tab → </a>
+          <a class="link large-screen" href={`${window.location.origin}/private/experiments/${exp.key}/viz`}> open image in new tab → </a>
         </div>
         <div class="exp-stats">
           <div class="exp-stat">type: {exp.type}</div>
+          <div class="exp-stat">id_consistency: {exp.id_consistency}</div> 
           <div class="exp-stat">options: {exp.arms}</div>
           <div class="exp-stat">trials: {exp.trials}</div>
           <div class="exp-stat">successes: {exp.successes}</div>
-          <div class="exp-stat">suggested arm: {exp.suggested_arm}</div>
         </div>
       </div>
-      <a class="link small-screen" href={`${window.location.origin}/public/experiments/${exp.key}/viz`}> open image in new tab → </a>
-      <div class="exp-desc">
-        experiment description is place holder Lorem ipsum dolor sit amet,
-        consectetur adipiscing elit. Ut semper, ante vitae aliquam lacinia.
-      </div>
+      <a class="link small-screen" href={`${window.location.origin}/private/experiments/${exp.key}/viz`}> open image in new tab → </a>
       <div class="api">
         <div class="sampling">
           <div class="tag">sampling</div>
@@ -68,16 +79,23 @@
               send a GET request to the following URL to sample an option:
             </div>
             <div class="code inline-code" tabindex="0">
-              {window.location
-                .origin}/public/experiments/{exp.key}/get_intervention
+              {#if exp.id_consistency}
+                {window.location.origin}/public/experiments/{exp.key}/get_intervention?user_id=
+                <input type="text" class="user_id" name="user_id"             bind:value={userId}>
+
+              {:else}
+                {window.location.origin}/public/experiments/{exp.key}/get_intervention
+              {/if}
             </div>
-            <div class="req-info">
-              send a GET request to the following URL to get the current optimal
-              arm:
+            {#if exp.id_consistency}
+            <div class="consistency_tag"> 
+              please provide a user id to the end of the url 
             </div>
-            <div class="code inline-code" tabindex="0">
-              {window.location.origin}/public/experiments/{exp.key}/best_arm
+            {/if}
+            <div class="sample_btn link" on:click={()=> sample(exp.key, exp.id_consistency)}>
+             {sampleValue}
             </div>
+
           </div>
         </div>
         <div class="options">
@@ -95,8 +113,10 @@
                 </select>
               </div>
               <div class="info">
+                {#if armProbability(exp.interventions, selected)}
                 {selected} has a {armProbability(exp.interventions, selected)}%
                 probability of success.
+                {/if}
               </div>
               <div class="info">
                 To update your experiment with a successful trial of option ‘{selected}’,
@@ -125,6 +145,8 @@
     </div>
   {:catch error}
     <Nav />
+    <p style="color: red">{error.message}</p>
+
     <code> Failed to fetch experiment data. Please try again. </code>
   {/await}
 </main>
@@ -186,11 +208,6 @@
     font-weight: 300px;
     color: var(--z2);
   }
-  .exp-desc {
-    margin-top: 2rem;
-    color: var(--z1);
-  }
-
   .api {
     margin-top: 3rem;
   }
@@ -203,7 +220,20 @@
     padding: 0.5rem;
     overflow-wrap: break-word;
   }
-
+  .user_id{
+    border:none;
+    outline: none;
+    font-family: monospace;
+    background-color: #ffffff;
+    color: var(--z2);
+    margin-left:-7px;
+  }
+  .consistency_tag {
+    margin-top: 1rem;
+  }
+  .sample_btn {
+    margin-top:1rem;
+  }
   .options {
     margin-top: 3rem;
     padding-bottom: 3rem;
