@@ -1,16 +1,25 @@
 <script>
-
+  import BetaCard from "./BetaCard.svelte";
+  import GaussianCard from "./GaussianCard.svelte";
   export let exp;
-  
+
   function goToExp() {
-      window.location.href = `./experiment/${exp.key}`;
+    window.location.href = `./experiment/${exp.key}`;
   }
 </script>
 
-<div class="card-border" on:click={goToExp} >
+<div class="card-border" on:click={goToExp}>
   <div class="content">
     <div class="fig">
-      <img src={`${window.location.origin}/private/experiments/${exp.key}/viz`} alt={exp.key} />
+      <!-- <img
+        src={`${window.location.origin}/private/experiments/${exp.key}/viz`}
+        alt={exp.key}
+      /> -->
+      {#if exp.experiment_type === "beta_binomial"}
+        <BetaCard interventions={exp.interventions} />
+      {:else}
+        <GaussianCard interventions={exp.interventions} />
+      {/if}
     </div>
     <div class="info">
       <div class="name">
@@ -64,14 +73,14 @@
     border: 1px solid var(--p1);
   }
   .card-border:hover .name {
-    color: var(--z0)
+    color: var(--z0);
   }
   .arrow {
     width: auto;
-    height: auto;;
+    height: auto;
     background: var(--color-bg);
     border: none;
-    padding:0rem;
+    padding: 0rem;
   }
   .arrow:focus {
     border: 1px solid var(--p1);
@@ -80,7 +89,7 @@
     border-top: 1px solid var(--p1);
   }
   .card-border:hover .arrow {
-    color: var(--p0)
+    color: var(--p0);
   }
   .content {
     max-width: 95%;
@@ -93,20 +102,15 @@
     justify-content: space-between;
   }
   .info {
+    max-width: 150px;
     padding-top: 0.5rem;
     border-top: 1px solid var(--p0);
   }
   .name {
     font-size: 18px;
     padding-bottom: 0.25rem;
-  }
-  .fig {
-      display: flex;
-      justify-content: space-evenly;
-  }
-  img {
-    width: 150px;
-    height: 170px;
-    object-fit: contain;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>

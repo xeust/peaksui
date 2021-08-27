@@ -1,14 +1,43 @@
 <script>
-  import { getExperiment, codeSnippet, armProbability, getSampling } from "./api.js";
+  import { DialogOverlay, DialogContent } from "svelte-accessible-dialog";
 
+  import {
+    get,
+    codeSnippet,
+    armProbability,
+    sample,
+    del,
+    getInterventionMean,
+    getInterventionStd,
+    updateConsistency,
+  } from "./api.js";
   import Nav from "./Nav.svelte";
-
+  import BetaFig from "./BetaFig.svelte";
+  import GaussianFig from "./GaussianFig.svelte";
   export let key;
+
+  
   let copySnippetStatus = "copy snippet";
   let sampleValue = "try it out!";
-  let userId = "";
-  let promise = getExperiment(key);
   let selected;
+  let userId = "";
+  let userConsistencyId = "";
+  let deleteExperiment = false;
+  let removeConsistency = false;
+  let settingsErrMsg = "";
+  let promise = get(key);
+  let language = "PY";
+  let isOpen;
+
+  const open = () => {
+    isOpen = true;
+    // required console.log to remove blur on button
+    console.log(document.activeElement.blur());
+  };
+  const close = () => {
+    isOpen = false;
+  };
+
   async function copySnippet() {
     const snippet = document.getElementById("snippet").innerHTML;
     try {
@@ -24,19 +53,49 @@
       }, 3000);
     }
   }
-  async function sample(key, id_consistency) {
+
+  async function sampleHandler(key, id_consistency) {
     try {
-      sampleValue = id_consistency ? await getSampling(key, userId) : await getSampling(key);
-      setTimeout(function () {
+      if (id_consistency && userId == "") {
+        sampleValue = "empty user id. please try again";
+        setTimeout(function () {
           sampleValue = "try it out!";
-      }, 3000);
-    } catch(error) {
-      sampleValue = "failed to sample option. try again"
-      setTimeout(function () {
+        }, 3000);
+      } else {
+        sampleValue = id_consistency
+          ? await sample(key, userId)
+          : await sample(key);
+        setTimeout(function () {
           sampleValue = "try it out!";
+        }, 3000);
+      }
+    } catch (error) {
+      sampleValue = "failed to sample option. try again";
+      setTimeout(function () {
+        sampleValue = "try it out!";
       }, 3000);
     }
-
+  }
+  async function confirmDelete() {
+    try {
+      const res = await del(key);
+      settingsErrMsg = "";
+      window.location.href = "/";
+    } catch (error) {
+      settingsErrMsg = "Failed to delete experiment. Please try again.";
+    }
+  }
+  async function confirmRemove() {
+    try {
+      if (userConsistencyId === "") {
+        throw new Error("Please provide a valid user id to remove the consistency.")
+      } 
+      const res = await updateConsistency(key, userConsistencyId);
+      settingsErrMsg = "";
+      close();
+    } catch (error) {
+      settingsErrMsg = error.message;
+    }
   }
 </script>
 
@@ -47,30 +106,53 @@
   {:then exp}
     <Nav />
     <div class="exp">
-      <div class="exp-title">
-        {exp.name}
+      <div class="header">
+        <div class="exp-title">
+          {exp.name}
+        </div>
+        <button on:click={open} tabindex="0"> settings </button>
       </div>
+
       <div class="exp-sum-tag tag">summary</div>
       <div class="exp-sum">
         <div class="exp-fig">
           <!-- Image content -->
-          <div class="fig">
+          <!-- <div class="fig">
             <img
               src={`${window.location.origin}/private/experiments/${exp.key}/viz`}
               alt={key}
             />
-          </div>
-          <a class="link large-screen" href={`${window.location.origin}/private/experiments/${exp.key}/viz`}> open image in new tab → </a>
+          </div> -->
+          {#if exp.experiment_type == "beta_binomial"}
+          <BetaFig interventions={exp.interventions} />
+          {:else}
+          <GaussianFig interventions={exp.interventions} />
+          {/if}
+
+          <div id="vis" />
+          <!-- <a
+            class="link large-screen"
+            href={`${window.location.origin}/private/experiments/${exp.key}/viz`}
+          >
+            open image in new tab →
+          </a> -->
         </div>
         <div class="exp-stats">
           <div class="exp-stat">type: {exp.type}</div>
-          <div class="exp-stat">id_consistency: {exp.id_consistency}</div> 
+          <div class="exp-stat">id consistency: {exp.id_consistency}</div>
           <div class="exp-stat">options: {exp.arms}</div>
-          <div class="exp-stat">trials: {exp.trials}</div>
-          <div class="exp-stat">successes: {exp.successes}</div>
+          {#if exp.experiment_type == "beta_binomial"}
+            <div class="exp-stat">trials: {exp.trials}</div>
+            <div class="exp-stat">successes: {exp.successes}</div>
+          {/if}
         </div>
       </div>
-      <a class="link small-screen" href={`${window.location.origin}/private/experiments/${exp.key}/viz`}> open image in new tab → </a>
+      <!-- <a
+        class="link small-screen"
+        href={`${window.location.origin}/private/experiments/${exp.key}/viz`}
+      >
+        open image in new tab →
+      </a> -->
       <div class="api">
         <div class="sampling">
           <div class="tag">sampling</div>
@@ -80,22 +162,30 @@
             </div>
             <div class="code inline-code" tabindex="0">
               {#if exp.id_consistency}
-                {window.location.origin}/public/experiments/{exp.key}/get_intervention?user_id=
-                <input type="text" class="user_id" name="user_id"             bind:value={userId}>
-
+                {window.location
+                  .origin}/public/experiments/{exp.key}/get_intervention?user_id=
+                <input
+                  type="text"
+                  class="user_id"
+                  name="user_id"
+                  bind:value={userId}
+                />
               {:else}
-                {window.location.origin}/public/experiments/{exp.key}/get_intervention
+                {window.location
+                  .origin}/public/experiments/{exp.key}/get_intervention
               {/if}
             </div>
             {#if exp.id_consistency}
-            <div class="consistency_tag"> 
-              please provide a user id to the end of the url 
-            </div>
+              <div class="consistency_tag">
+                please provide a user id to the end of the url
+              </div>
             {/if}
-            <div class="sample_btn link" on:click={()=> sample(exp.key, exp.id_consistency)}>
-             {sampleValue}
+            <div
+              class="sample_btn link"
+              on:click={() => sampleHandler(exp.key, exp.id_consistency)}
+            >
+              {sampleValue}
             </div>
-
           </div>
         </div>
         <div class="options">
@@ -113,9 +203,19 @@
                 </select>
               </div>
               <div class="info">
-                {#if armProbability(exp.interventions, selected)}
-                {selected} has a {armProbability(exp.interventions, selected)}%
-                probability of success.
+                {#if exp.experiment_type == "beta_binomial" && armProbability(exp.interventions, selected)}
+                  {selected} has a {armProbability(
+                    exp.interventions,
+                    selected
+                  )}% probability of success.
+                {/if}
+                {#if exp.experiment_type == "gaussian"}
+                  mean: {getInterventionMean(exp.interventions, selected)}
+                  <br />
+                  standard deviation: {getInterventionStd(
+                    exp.interventions,
+                    selected
+                  )}
                 {/if}
               </div>
               <div class="info">
@@ -128,21 +228,110 @@
             <div>
               <div class="code-snippet" tabindex="0">
                 <pre><code class="code snippet" id ="snippet">
-                  {codeSnippet(exp.key, selected)}
+                  {codeSnippet(exp.key, selected, language)}
                 </code></pre>
               </div>
-              <button
-                class="link copy-button float"
-                on:click={copySnippet}
-                tabindex="0"
-              >
-                {copySnippetStatus}
-              </button>
+              <div class="code-actions">
+                <select bind:value={language}>
+                  <option value="PY"> python </option>
+                  <option value="JS"> javascript </option>
+                </select>
+                <button
+                  class="link copy-button"
+                  on:click={copySnippet}
+                  tabindex="0"
+                >
+                  {copySnippetStatus}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <DialogOverlay
+      {isOpen}
+      onDismiss={close}
+      style="      position: fixed;
+  padding:0;
+  margin:0;
+
+  z-index: 1000;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  background:rgba(255,255,255,0.75);
+  overflow: auto;
+  align-items: center;"
+    >
+      <DialogContent
+        style="  
+      padding:0;
+      margin:0;
+      background:transparent;
+      width:auto;
+   "
+        aria-label="Announcement"
+      >
+        <div class="modal-wrapper">
+          <div class="modal-tag">settings</div>
+          {#if exp.id_consistency}
+            <div class="setting-tag">remove id consistency for a user</div>
+            <input class="remove-user-input" type="text" placeholder="user id" bind:value={userConsistencyId}/>
+            <div class="setting-row">
+              <input
+                class="confirm-checkbox"
+                type="checkbox"
+                bind:checked={removeConsistency}
+              />
+              <div class="setting-msg">
+                I confirm I want to remove id consistency for this user
+              </div>
+              {#if removeConsistency}
+                <button class="confirm-setting" on:click={confirmRemove}>
+                  confirm
+                </button>
+              {:else}
+                <button
+                  class="confirm-setting"
+                  on:click={confirmRemove}
+                  disabled
+                >
+                  confirm
+                </button>
+              {/if}
+            </div>
+          {/if}
+          <div class="setting-tag">delete experiment</div>
+          <div class="setting-row">
+            <input
+              class="confirm-checkbox"
+              type="checkbox"
+              bind:checked={deleteExperiment}
+            />
+            <div class="setting-msg">
+              I confirm I want to delete experiment '{exp.name}'
+            </div>
+
+            {#if deleteExperiment}
+              <button class="confirm-setting" on:click={confirmDelete}>
+                confirm
+              </button>
+            {:else}
+              <button class="confirm-setting" on:click={confirmDelete} disabled>
+                confirm
+              </button>
+            {/if}
+          </div>
+          <div class="error-msg">
+            {settingsErrMsg}
+          </div>
+        </div>
+      </DialogContent>
+    </DialogOverlay>
   {:catch error}
     <Nav />
     <p style="color: red">{error.message}</p>
@@ -156,9 +345,16 @@
     margin-top: 3rem;
   }
   .exp-title {
-    font-size: 36px;        
+    font-size: 36px;
     font-weight: 400;
     color: var(--z0);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
   }
   .tag {
     font-size: 24px;
@@ -174,19 +370,42 @@
     height: auto;
     border: none;
     background-color: var(--color-bg);
-    padding:0rem;
+    padding: 0rem;
   }
   .copy-button:focus {
     border: 1px solid var(--p1);
+  }
+
+  .confirm-setting:disabled {
+    color: var(--z2);
+    border-color: var(--z2);
+  }
+  .confirm-setting:hover:disabled {
+    color: var(--z2);
+    border-color: var(--z2);
   }
   .exp-sum {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
   }
-  .float {
-    float: right;
+  .remove-user-input{
+    outline: none;
+    font-family: monospace;
+    background-color: #ffffff;
+    border: 1px solid var(--p0);
+    color: var(--z2);
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    font-size: 18px;
+    width: fit-content;
   }
+  .remove-user-input:focus {
+    border: 1px solid var(--p1);
+    color: var(--z0);
+  }
+  /* 
   .fig {
     width: 450px;
     height: 356px;
@@ -197,7 +416,7 @@
     width: 450px;
     height: 356px;
     object-fit: contain;
-  }
+  } */
   .exp-stats {
     display: flex;
     flex-direction: column;
@@ -207,6 +426,12 @@
     font-size: 24px;
     font-weight: 300px;
     color: var(--z2);
+  }
+  .error-msg {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--r1);
+    padding-top: 1rem;
   }
   .api {
     margin-top: 3rem;
@@ -220,19 +445,19 @@
     padding: 0.5rem;
     overflow-wrap: break-word;
   }
-  .user_id{
-    border:none;
+  .user_id {
+    border: none;
     outline: none;
     font-family: monospace;
     background-color: #ffffff;
     color: var(--z2);
-    margin-left:-7px;
+    margin-left: -7px;
   }
   .consistency_tag {
     margin-top: 1rem;
   }
   .sample_btn {
-    margin-top:1rem;
+    margin-top: 1rem;
   }
   .options {
     margin-top: 3rem;
@@ -249,13 +474,13 @@
     color: var(--z1);
   }
 
-  a {
+  /* a {
     color: var(--p1);
-  }
+  } */
   .select-option {
     display: flex;
     flex-direction: row;
-    gap:.75rem;
+    gap: 0.75rem;
   }
   .label {
     align-self: center;
@@ -278,7 +503,7 @@
   .code-snippet:focus {
     border: 1px solid var(--p1);
   }
-  .code-snippet:focus .snippet{
+  .code-snippet:focus .snippet {
     color: var(--z0);
   }
   select {
@@ -286,10 +511,13 @@
   }
   .snippet {
     white-space: pre-wrap;
-    border: none
+    border: none;
   }
-
-  @media (min-width: 708px) {
+  .code-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  /* @media (min-width: 708px) {
     .small-screen {
       display: inherit;
     }
@@ -304,9 +532,9 @@
     .large-screen {
       display: inherit;
     }
-  }
+  } */
   @media only screen and (max-width: 708px) {
-    .fig {
+    /* .fig {
       width: 390px;
       height: 356px;
       border: 1px solid var(--z0);
@@ -315,7 +543,7 @@
       width: 390px;
       height: 356px;
       object-fit: contain;
-    }
+    } */
     .exp-stats {
       margin-top: 2rem;
       height: 356px;
@@ -334,7 +562,7 @@
       padding: 0rem 0rem 0rem;
       width: 90vw;
     }
-    .fig {
+    /* .fig {
       width: 85vw;
       height: 273px;
       border: 1px solid var(--z0);
@@ -343,11 +571,105 @@
       width: 85vw;
       height: 273px;
       object-fit: contain;
-    }
+    } */
   }
   @media only screen and (max-width: 844px) {
     .code-snippet {
       margin-top: 1rem;
+    }
+  }
+  .modal-tag {
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--z0);
+    margin-bottom: 2rem;
+  }
+  .confirm-checkbox {
+    width: 18px;
+    height: 18px;
+  }
+  .setting-tag {
+    margin-top: 2rem;
+    font-size: 24px;
+    color: var(--z1);
+    margin-bottom: 2rem;
+  }
+  .setting-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row;
+  }
+  .setting-msg {
+    align-self: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .confirm-setting {
+    height: 25px;
+    width: 75px;
+
+    border: 1px solid var(--r0);
+    color: var(--z2);
+    font-size: 18px;
+    background: #ffffff;
+  }
+  .confirm-setting:hover {
+    cursor: pointer;
+    border: 1px solid var(--r1);
+    color: var(--r1);
+  }
+  .confirm-setting:focus {
+    cursor: pointer;
+    border: 1px solid var(--r1);
+    color: var(--r1);
+  }
+  .modal-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding-right: 48px;
+    padding-top: 48px;
+    padding-bottom: 48px;
+    padding-left: 48px;
+    border: 1px solid var(--p0);
+    background-color: var(--color-bg);
+    border-radius: 5px;
+    overflow-y: scroll;
+  }
+  @media only screen and (min-width: 768px) {
+    .modal-wrapper {
+      width: 650px;
+      min-height: 400px;
+      max-height: 550px;
+    }
+  }
+  @media (min-width: 460px) and (max-width: 768px) {
+    .modal-wrapper {
+      width: 400px;
+      height: 340px;
+    }
+  }
+  @media (max-width: 460px) {
+    .modal-wrapper {
+      width: calc(80vw);
+      height: calc(70vh);
+      font-size: 10px;
+      padding-right: 24px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      padding-left: 24px;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .modal-wrapper {
+      width: calc(80vw);
+      height: calc(70vh);
+      font-size: 10px;
+      padding-right: 24px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      padding-left: 24px;
     }
   }
 </style>

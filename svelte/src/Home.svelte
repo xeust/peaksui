@@ -3,36 +3,51 @@
   import Card from "./Card.svelte";
   import { DialogOverlay, DialogContent } from "svelte-accessible-dialog";
 
-  import { expList, defaultExp, createExp } from "./api.js";
+  import { list, betaBinomial, gaussian, createBetaBinomial, createGaussian, convertExperiment} from "./api.js";
   import { validateCreate } from "./validators";
 
-  let newExperiment = defaultExp();
-
+  let create = {"beta_binomial": createBetaBinomial, "gaussian": createGaussian}
+  let newExperiment = {
+    name: "",
+    experiment_type: "beta_binomial",
+    id_consistency: false,
+    interventions: [
+      {
+        intervention_name: "",
+        num_played: 0,
+        num_successes: 0
+      }
+    ],
+  }
+  
   let errMsg = "";
 
   let isOpen;
 
   const open = () => {
     isOpen = true;
+    // required console.log to remove blur on button
     console.log(document.activeElement.blur());
   };
   const close = () => {
     isOpen = false;
   };
 
-  let expsPromise = expList();
+  let expsPromise = list();
 
   const createHandler = async () => {
     if (!validateCreate(newExperiment)) {
       errMsg = "Empty fields. Please try again.";
       return;
     }
-    const res = await createExp(newExperiment);
+    let exp = convertExperiment(newExperiment);
+
+    const res = await create[exp.experiment_type](exp);
     if (res.status === 200) {
           errMsg = "";
           const bod = await res.json();
-          const name = bod.key;  
-          window.location.href = `/experiment/${name}`;
+
+          // window.location.href = `/experiment/${bod.key}`;
           return;
     }
     errMsg = "Failed to create a new experiment.";
@@ -114,8 +129,9 @@
         </div>
         <div class="modal-title-row">
           <div class="label">type</div>
-          <select bind:value={newExperiment.type}>
-            <option value="BINARY"> binary</option>
+          <select bind:value={newExperiment.experiment_type} >
+            <option value="beta_binomial"> beta binomial</option>
+            <option value="gaussian"> gaussian</option>
           </select>
         </div>
 
@@ -124,8 +140,8 @@
         This description spans multiple lines.
         </div>
         <div class="modal-title-row">
-          <div class="label">id_consistency</div>
-          <input bind:value={newExperiment.id_consistency} type="checkbox" id="id_consistency" name="id_consistency">
+          <div class="label">id consistency</div>
+          <input class="consistency-input" bind:checked={newExperiment.id_consistency} type=checkbox >
         </div>
         <div>
           This is a description of a id_consistency. A id_consistency is one where all this interesting stuff happens.
@@ -195,8 +211,14 @@
   .header-text {
     font-size: 36px;
     font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-
+  .consistency-input {
+    width: 18px;
+    height: 18px;
+  }
   .error-msg {
     font-size: 18px;
     font-weight: 700;
