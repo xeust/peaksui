@@ -3,7 +3,6 @@
   import Home from "./Home.svelte";
   import Experiment from "./Experiment.svelte";
   import Error from "./Error.svelte";
-  import GaussianCard from "./GaussianCard.svelte";
 </script>
 
 <Router primary={false}>
@@ -12,9 +11,6 @@
   </Route>
   <Route path="/">
     <Home />
-  </Route>
-  <Route path="/beta">
-    <GaussianCard />
   </Route>
   <Route path="/*">
     <Error />
