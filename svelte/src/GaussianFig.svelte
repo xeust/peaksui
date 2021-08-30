@@ -34,14 +34,14 @@
     for (const intervention of interventions) {
       if (intervention.trials >= 5) {
         let id = createData(
-        interval,
-        upper_bound,
-        lower_bound,
-        intervention.mean,
-        intervention.std
-      );
-      rawData = rawData.concat(id);
-      data.push({ key: intervention.intervention_name, values: id });
+          interval,
+          upper_bound,
+          lower_bound,
+          intervention.mean,
+          intervention.std
+        );
+        rawData = rawData.concat(id);
+        data.push({ key: intervention.intervention_name, values: id });
       }
     }
 
@@ -68,6 +68,16 @@
     //     }),
     //   ])
     //   .range([height, 0]);
+
+    lower_bound = null;
+    upper_bound = null;
+    interventions.forEach((d) => {
+      if (d.trials >= 5) {
+        lower_bound = Math.min(d.mean - 4*(d.std), lower_bound)
+        upper_bound = Math.max(d.mean + 4*(d.std), upper_bound)
+      }
+    });
+
 
     var xScale = d3
       .scaleLinear()
@@ -107,7 +117,6 @@
       .append("text")
       .attr("fill", "black") //set the fill here
       .attr("transform", "translate(" + width / 2 + ", 30)")
-      .text("probability")
       .style("font-weight", "bold");
     var density = data;
     // color
@@ -142,12 +151,14 @@
       Tooltip.style("opacity", 1);
     };
     var mousemove = function (event, d) {
+      d3.select(event.currentTarget).attr("fill-opacity", "0.2")
       Tooltip.html(d.key)
         .style("color", color(d.key))
         .style("left", d3.pointer(event)[0] + 30 + "px")
         .style("top", d3.pointer(event)[1] + "px");
     };
     var mouseleave = function (d) {
+      d3.select(event.currentTarget).attr("fill-opacity", "0")
       Tooltip.style("opacity", 0);
     };
     // Plot the area
@@ -156,11 +167,14 @@
       .data(density)
       .enter()
       .append("path")
-      .attr("fill", "none")
+      .attr("fill", function (d) {
+        return color(d.key);
+      })
+      .attr("fill-opacity", "0")
       .attr("stroke", function (d) {
         return color(d.key);
       })
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 2)
       .attr("d", function (d) {
         return d3
           .line()
@@ -181,10 +195,10 @@
   $: draw();
 </script>
 
-<div bind:this={el} bind:clientHeight={height} bind:clientWidth={width}/>
+<div bind:this={el} bind:clientHeight={height} bind:clientWidth={width} />
 
 <style>
-    div {
+  div {
     width: 450px;
     height: 356px;
   }

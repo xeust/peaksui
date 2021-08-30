@@ -139,12 +139,15 @@
       Tooltip.style("opacity", 1);
     };
     var mousemove = function (event, d) {
+
+      d3.select(event.currentTarget).attr("fill-opacity", "0.2")
       Tooltip.html(d.key)
         .style("color", color(d.key))
         .style("left", d3.pointer(event)[0] + 30 + "px")
         .style("top", d3.pointer(event)[1] + "px");
     };
     var mouseleave = function (d) {
+      d3.select(event.currentTarget).attr("fill-opacity", "0")
       Tooltip.style("opacity", 0);
     };
     // Plot the area
@@ -153,11 +156,14 @@
       .data(density)
       .enter()
       .append("path")
-      .attr("fill", "none")
+      .attr("fill", function (d) {
+        return color(d.key);
+      })
+      .attr("fill-opacity", "0")
       .attr("stroke", function (d) {
         return color(d.key);
       })
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 2)
       .attr("d", function (d) {
         return d3
           .line()

@@ -10,8 +10,8 @@
     height = 170;
   let color;
   export let interventions = [
-    { intervention_name: "one", mean: 1, std: 1},
-    { intervention_name: "two", mean: 0, std: 1},
+    { intervention_name: "one", mean: 1, std: 1 },
+    { intervention_name: "two", mean: 0, std: 1 },
   ];
   function createData(interval, upper_bound, lower_bound, mean, std) {
     var n = Math.ceil((upper_bound - lower_bound) / interval);
@@ -48,6 +48,31 @@
       rawData = createData(interval, upper_bound, lower_bound, 0, 1);
       data.push({ key: "not enough data", values: rawData });
     }
+
+    var lowest_mean = d3.min(interventions, function (d) {
+      return d.mean;
+    });
+
+    var highest_mean = d3.max(interventions, function (d) {
+      return d.mean;
+    });
+
+    interventions.forEach((d) => {
+      if (d.mean == lowest_mean) {
+        lower_bound = lowest_mean - 3 * d.std;
+      }
+      if (d.mean == highest_mean) {
+        upper_bound = highest_mean + 3 * d.std;
+      }
+    });
+    lower_bound = null;
+    upper_bound = null;
+    interventions.forEach((d) => {
+      if (d.trials >= 5) {
+        lower_bound = Math.min(d.mean - 4*(d.std), lower_bound)
+        upper_bound = Math.max(d.mean + 4*(d.std), upper_bound)
+      }
+    });
     var xScale = d3
       .scaleLinear()
       .domain([lower_bound, upper_bound])
@@ -141,7 +166,7 @@
       .attr("stroke", function (d) {
         return color(d.key);
       })
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 1.5)
       .attr("d", function (d) {
         return d3
           .line()

@@ -16,7 +16,6 @@
   import GaussianFig from "./GaussianFig.svelte";
   export let key;
 
-  
   let copySnippetStatus = "copy snippet";
   let sampleValue = "try it out!";
   let selected;
@@ -28,6 +27,7 @@
   let promise = get(key);
   let language = "PY";
   let isOpen;
+  let sample_value_css = "";
 
   const open = () => {
     isOpen = true;
@@ -57,22 +57,26 @@
   async function sampleHandler(key, id_consistency) {
     try {
       if (id_consistency && userId == "") {
-        sampleValue = "empty user id. please try again";
+        sampleValue = "empty user id. please try again!";
         setTimeout(function () {
           sampleValue = "try it out!";
+          sample_value_css = "";
         }, 3000);
       } else {
         sampleValue = id_consistency
           ? await sample(key, userId)
           : await sample(key);
+        sample_value_css = "sample-value";
         setTimeout(function () {
           sampleValue = "try it out!";
+          sample_value_css = "";
         }, 3000);
       }
     } catch (error) {
       sampleValue = "failed to sample option. try again";
       setTimeout(function () {
         sampleValue = "try it out!";
+        sample_value_css = "";
       }, 3000);
     }
   }
@@ -88,8 +92,10 @@
   async function confirmRemove() {
     try {
       if (userConsistencyId === "") {
-        throw new Error("Please provide a valid user id to remove the consistency.")
-      } 
+        throw new Error(
+          "Please provide a valid user id to remove the consistency."
+        );
+      }
       const res = await updateConsistency(key, userConsistencyId);
       settingsErrMsg = "";
       close();
@@ -124,9 +130,9 @@
             />
           </div> -->
           {#if exp.experiment_type == "beta_binomial"}
-          <BetaFig interventions={exp.interventions} />
+            <BetaFig interventions={exp.interventions} />
           {:else}
-          <GaussianFig interventions={exp.interventions} />
+            <GaussianFig interventions={exp.interventions} />
           {/if}
 
           <div id="vis" />
@@ -141,8 +147,8 @@
           <div class="exp-stat">type: {exp.type}</div>
           <div class="exp-stat">id consistency: {exp.id_consistency}</div>
           <div class="exp-stat">options: {exp.arms}</div>
+          <div class="exp-stat">trials: {exp.trials}</div>
           {#if exp.experiment_type == "beta_binomial"}
-            <div class="exp-stat">trials: {exp.trials}</div>
             <div class="exp-stat">successes: {exp.successes}</div>
           {/if}
         </div>
@@ -157,9 +163,17 @@
         <div class="sampling">
           <div class="tag">sampling</div>
           <div class="random">
-            <div class="req-info">
-              send a GET request to the following URL to sample an option:
-            </div>
+            {#if exp.id_consistency}
+              <div class="req-info">
+                send a GET request to the following URL to sample an option
+                (please provide a user id to the end of the url):
+              </div>
+            {:else}
+              <div class="req-info">
+                send a GET request to the following URL to sample an option:
+              </div>
+            {/if}
+
             <div class="code inline-code" tabindex="0">
               {#if exp.id_consistency}
                 {window.location
@@ -175,13 +189,8 @@
                   .origin}/public/experiments/{exp.key}/get_intervention
               {/if}
             </div>
-            {#if exp.id_consistency}
-              <div class="consistency_tag">
-                please provide a user id to the end of the url
-              </div>
-            {/if}
             <div
-              class="sample_btn link"
+              class="sample_btn link {sample_value_css}"
               on:click={() => sampleHandler(exp.key, exp.id_consistency)}
             >
               {sampleValue}
@@ -210,12 +219,13 @@
                   )}% probability of success.
                 {/if}
                 {#if exp.experiment_type == "gaussian"}
-                  mean: {getInterventionMean(exp.interventions, selected)}
+                  mean: {Number.parseFloat(
+                    getInterventionMean(exp.interventions, selected)
+                  ).toFixed(3)}
                   <br />
-                  standard deviation: {getInterventionStd(
-                    exp.interventions,
-                    selected
-                  )}
+                  standard deviation: {Number.parseFloat(
+                    getInterventionStd(exp.interventions, selected)
+                  ).toFixed(3)}
                 {/if}
               </div>
               <div class="info">
@@ -280,7 +290,12 @@
           <div class="modal-tag">settings</div>
           {#if exp.id_consistency}
             <div class="setting-tag">remove id consistency for a user</div>
-            <input class="remove-user-input" type="text" placeholder="user id" bind:value={userConsistencyId}/>
+            <input
+              class="remove-user-input"
+              type="text"
+              placeholder="user id"
+              bind:value={userConsistencyId}
+            />
             <div class="setting-row">
               <input
                 class="confirm-checkbox"
@@ -365,6 +380,18 @@
     margin-top: 2.5rem;
     margin-bottom: 1.5rem;
   }
+  .sample-value {
+    font-family: monospace;
+    background-color: #ffffff;
+    border: 1px solid var(--p0);
+    color: var(--z2);
+    box-sizing: border-box;
+    text-decoration: none;
+    padding: 10px;
+    width: fit-content;
+    cursor: default;
+    border-radius: 5px;
+  }
   .copy-button {
     width: auto;
     height: auto;
@@ -389,7 +416,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
   }
-  .remove-user-input{
+  .remove-user-input {
     outline: none;
     font-family: monospace;
     background-color: #ffffff;
@@ -452,9 +479,6 @@
     background-color: #ffffff;
     color: var(--z2);
     margin-left: -7px;
-  }
-  .consistency_tag {
-    margin-top: 1rem;
   }
   .sample_btn {
     margin-top: 1rem;

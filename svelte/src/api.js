@@ -3,6 +3,11 @@ const sumTrials = (interventions) => {
     num_played: a.num_played + b.num_played,
   })).num_played;
 };
+const sumTrialsGaussian = (interventions) => {
+  return interventions.reduce((a, b) => ({
+    trials: a.trials + b.trials
+  })).trials
+}
 
 const sumSuccesses = (interventions) => {
   return interventions.reduce((a, b) => ({
@@ -42,7 +47,7 @@ export const list = async () => {
   if (res.status === 200) {
     data = data[0];
     for (const exp of data) {
-      exp.trials = sumTrials(exp.interventions);
+      exp.trials = exp.experiment_type === "beta_binomial" ? sumTrials(exp.interventions) : sumTrialsGaussian(exp.interventions)
       exp.arms = exp.interventions.length;
     }
     return data;
@@ -75,7 +80,7 @@ export const get = async (key) => {
   const res = await fetch(`../private/experiments/${key}`);
   if (res.status == 200) {
     const exp = await res.json();
-    exp.trials = sumTrials(exp.interventions);
+    exp.trials = exp.experiment_type === "beta_binomial" ? sumTrials(exp.interventions) : sumTrialsGaussian(exp.interventions)
     exp.successes = sumSuccesses(exp.interventions);
     exp.arms = exp.interventions.length;
     return exp;
@@ -165,11 +170,15 @@ export const codeSnippet = (key, arm, language) => {
     },
 });`;
 
-  const pySnippet = `import requests as req
+  const pySnippet = `import requests as r
 import json
-r = req.post('${window.location.origin}public/update',
-    body=json.loads({'key': '${key}',
-    'arm_name': '${arm}', 'outcome': 1}),
+
+req = r.post('${window.location.origin}/public/update',
+    body=json.loads({
+    'key': '${key}',
+    'arm_name': '${arm}',
+    'outcome': 1
+    }),
     headers={'Content-Type': 'application/json'}) 
 `;
   if (language == "JS") {
