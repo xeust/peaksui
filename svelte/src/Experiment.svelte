@@ -17,17 +17,19 @@
   export let key;
 
   let copySnippetStatus = "copy snippet";
-  let sampleValue = "try it out!";
+  let sampleBtn = "try it out!";
+  let sampleValue = "";
   let selected;
   let userId = "";
   let userConsistencyId = "";
   let deleteExperiment = false;
   let removeConsistency = false;
-  let settingsErrMsg = "";
+  let deleteErrMsg = "";
+  let removeErrMsg = "";
   let promise = get(key);
   let language = "PY";
   let isOpen;
-  let sample_value_css = "";
+
 
   const open = () => {
     isOpen = true;
@@ -57,36 +59,35 @@
   async function sampleHandler(key, id_consistency) {
     try {
       if (id_consistency && userId == "") {
-        sampleValue = "empty user id. please try again!";
+        sampleBtn = "empty user id. please try again!";
         setTimeout(function () {
-          sampleValue = "try it out!";
-          sample_value_css = "";
+          sampleBtn = "try it out!";
+
         }, 3000);
       } else {
         sampleValue = id_consistency
           ? await sample(key, userId)
           : await sample(key);
-        sample_value_css = "sample-value";
+        sampleBtn = "try it out: "
         setTimeout(function () {
-          sampleValue = "try it out!";
-          sample_value_css = "";
+          sampleBtn = "try it out!";
+          sampleValue = "";
         }, 3000);
       }
     } catch (error) {
-      sampleValue = "failed to sample option. try again";
+      sampleBtn = "failed to sample option. try again";
       setTimeout(function () {
-        sampleValue = "try it out!";
-        sample_value_css = "";
+        sampleBtn = "try it out!";
       }, 3000);
     }
   }
   async function confirmDelete() {
     try {
       const res = await del(key);
-      settingsErrMsg = "";
+      deleteErrMsg = "";
       window.location.href = "/";
     } catch (error) {
-      settingsErrMsg = "Failed to delete experiment. Please try again.";
+      deleteErrMsg = "Failed to delete experiment. Please try again.";
     }
   }
   async function confirmRemove() {
@@ -97,10 +98,10 @@
         );
       }
       const res = await updateConsistency(key, userConsistencyId);
-      settingsErrMsg = "";
+      removeErrMsg = "";
       close();
     } catch (error) {
-      settingsErrMsg = error.message;
+      removeErrMsg = error.message;
     }
   }
 </script>
@@ -189,12 +190,18 @@
                   .origin}/public/experiments/{exp.key}/get_intervention
               {/if}
             </div>
-            <div
-              class="sample_btn link {sample_value_css}"
+            <div class="row">
+              <div
+              class="sample_btn link"
               on:click={() => sampleHandler(exp.key, exp.id_consistency)}
             >
+              {sampleBtn}
+            </div>
+            <div>
               {sampleValue}
             </div>
+            </div>
+
           </div>
         </div>
         <div class="options">
@@ -306,20 +313,20 @@
                 I confirm I want to remove id consistency for this user
               </div>
               {#if removeConsistency}
-                <button class="confirm-setting" on:click={confirmRemove}>
-                  confirm
+                <button class="delete-button" on:click={confirmRemove}>
+                  delete
                 </button>
               {:else}
-                <button
-                  class="confirm-setting"
-                  on:click={confirmRemove}
-                  disabled
-                >
-                  confirm
+                <button class="delete-button" on:click={confirmRemove} disabled>
+                  delete
                 </button>
               {/if}
             </div>
+            <div class="error-msg">
+              {removeErrMsg}
+            </div>
           {/if}
+
           <div class="setting-tag">delete experiment</div>
           <div class="setting-row">
             <input
@@ -332,17 +339,17 @@
             </div>
 
             {#if deleteExperiment}
-              <button class="confirm-setting" on:click={confirmDelete}>
-                confirm
+              <button class="delete-button" on:click={confirmDelete}>
+                delete
               </button>
             {:else}
-              <button class="confirm-setting" on:click={confirmDelete} disabled>
-                confirm
+              <button class="delete-button" on:click={confirmDelete} disabled>
+                delete
               </button>
             {/if}
           </div>
           <div class="error-msg">
-            {settingsErrMsg}
+            {deleteErrMsg}
           </div>
         </div>
       </DialogContent>
@@ -380,18 +387,13 @@
     margin-top: 2.5rem;
     margin-bottom: 1.5rem;
   }
-  .sample-value {
-    font-family: monospace;
-    background-color: #ffffff;
-    border: 1px solid var(--p0);
-    color: var(--z2);
-    box-sizing: border-box;
-    text-decoration: none;
-    padding: 10px;
-    width: fit-content;
-    cursor: default;
-    border-radius: 5px;
-  }
+.row{
+  margin-top: 1rem;
+  display:flex;
+  font-size: 14px;
+  font-weight: 400;
+  flex-direction: row;
+}
   .copy-button {
     width: auto;
     height: auto;
@@ -403,11 +405,11 @@
     border: 1px solid var(--p1);
   }
 
-  .confirm-setting:disabled {
+  .delete-button:disabled {
     color: var(--z2);
     border-color: var(--z2);
   }
-  .confirm-setting:hover:disabled {
+  .delete-button:hover:disabled {
     color: var(--z2);
     border-color: var(--z2);
   }
@@ -458,7 +460,7 @@
     font-size: 18px;
     font-weight: 700;
     color: var(--r1);
-    padding-top: 1rem;
+    margin-top: 1rem;
   }
   .api {
     margin-top: 3rem;
@@ -480,9 +482,6 @@
     color: var(--z2);
     margin-left: -7px;
   }
-  .sample_btn {
-    margin-top: 1rem;
-  }
   .options {
     margin-top: 3rem;
     padding-bottom: 3rem;
@@ -494,7 +493,7 @@
     flex-wrap: wrap;
   }
   .options-info {
-    width: 422px;
+    width: 400px;
     color: var(--z1);
   }
 
@@ -596,6 +595,12 @@
       height: 273px;
       object-fit: contain;
     } */
+    .options-info {
+      max-width: 95vw;
+    }
+    .code-snippet {
+      padding: 1rem 1rem 1rem;
+    }
   }
   @media only screen and (max-width: 844px) {
     .code-snippet {
@@ -628,8 +633,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 18px;
   }
-  .confirm-setting {
+  .delete-button {
     height: 25px;
     width: 75px;
 
@@ -638,12 +644,12 @@
     font-size: 18px;
     background: #ffffff;
   }
-  .confirm-setting:hover {
+  .delete-button:hover {
     cursor: pointer;
     border: 1px solid var(--r1);
     color: var(--r1);
   }
-  .confirm-setting:focus {
+  .delete-button:focus {
     cursor: pointer;
     border: 1px solid var(--r1);
     color: var(--r1);
@@ -667,6 +673,11 @@
       max-height: 550px;
     }
   }
+  @media only screen and (max-width: 365px) {
+    .options-info {
+      max-width: 95vw;
+    }
+  }
   @media (min-width: 460px) and (max-width: 768px) {
     .modal-wrapper {
       width: 400px;
@@ -682,6 +693,16 @@
       padding-top: 24px;
       padding-bottom: 24px;
       padding-left: 24px;
+    }
+    .setting-msg {
+      font-size: 12px;
+    }
+    .confirm-checkbox {
+      min-width: 12px;
+      min-height: 12px;
+    }
+    .delete-button {
+      font-size: 12px;
     }
   }
 

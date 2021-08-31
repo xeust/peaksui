@@ -49,30 +49,33 @@
       data.push({ key: "not enough data", values: rawData });
     }
 
-    var lowest_mean = d3.min(interventions, function (d) {
-      return d.mean;
-    });
+    if (data.length != 1 && data[0].key != "not enough data") {
+      var lowest_mean = d3.min(interventions, function (d) {
+        return d.mean;
+      });
 
-    var highest_mean = d3.max(interventions, function (d) {
-      return d.mean;
-    });
+      var highest_mean = d3.max(interventions, function (d) {
+        return d.mean;
+      });
 
-    interventions.forEach((d) => {
-      if (d.mean == lowest_mean) {
-        lower_bound = lowest_mean - 3 * d.std;
-      }
-      if (d.mean == highest_mean) {
-        upper_bound = highest_mean + 3 * d.std;
-      }
-    });
-    lower_bound = null;
-    upper_bound = null;
-    interventions.forEach((d) => {
-      if (d.trials >= 5) {
-        lower_bound = Math.min(d.mean - 4*(d.std), lower_bound)
-        upper_bound = Math.max(d.mean + 4*(d.std), upper_bound)
-      }
-    });
+      interventions.forEach((d) => {
+        if (d.mean == lowest_mean) {
+          lower_bound = lowest_mean - 3 * d.std;
+        }
+        if (d.mean == highest_mean) {
+          upper_bound = highest_mean + 3 * d.std;
+        }
+      });
+      lower_bound = null;
+      upper_bound = null;
+      interventions.forEach((d) => {
+        if (d.trials >= 5) {
+          lower_bound = Math.min(d.mean - 4 * d.std, lower_bound);
+          upper_bound = Math.max(d.mean + 4 * d.std, upper_bound);
+        }
+      });
+    }
+
     var xScale = d3
       .scaleLinear()
       .domain([lower_bound, upper_bound])
