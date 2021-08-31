@@ -134,22 +134,29 @@
             <option value="gaussian"> gaussian</option>
           </select>
         </div>
+        {#if newExperiment.experiment_type === "beta_binomial"}
+        These are experiments in which the outcome can have one of two values. An example would be a ‘click vs no-click’ experiment where the user sees a button of a certain color. If you want to establish a link between an intervention and an outcome that is yes / no, this is the right experiment.
+        {:else}
+        These are experiments in which the outcome can have any (real) value. For example, ‘how long does the user stay on my website in (milli-)seconds given my font size’? If you want to establish a link between an intervention and an outcome that is any (real) number, this is the right experiment.
+        {/if}
 
-        <div>
-        This is a description of a binary experiment. A binary experiment is one where all this interesting stuff happens.
-        This description spans multiple lines.
-        </div>
         <div class="modal-title-row">
           <div class="label">id consistency</div>
           <input class="consistency-input" bind:checked={newExperiment.id_consistency} type=checkbox >
         </div>
-        <div>
-          This is a description of a id_consistency. A id_consistency is one where all this interesting stuff happens.
-          This description spans multiple lines.
-          </div>
-        <div class="options">options</div>
 
-        <div id="options-grid">
+        {#if newExperiment.id_consistency}
+        <div>
+          Once a user of a given user_id has been assigned an intervention, they will continue to see this intervention. Use this if you want to make sure your user feels at home with their assigned intervention.
+        </div>
+        {:else}
+        <div>
+          Every call to get_intervention will return a randomly drawn sample according to the likelihood of that intervention being optimal. Use this if you want your experiment to assign the maximum number of optimal interventions given your current knowledge.
+        </div>
+        {/if}
+        <div class="options">options</div>
+        Add as many possible interventions as you want. The more interventions you test, the slower the optimal solution will emerge. Choosing too many is probably not a good idea as sampling time increases with the number of interventions.
+        <div id="options-grid" class="options-grid">
           {#each newExperiment.interventions as option, i}
             <div class="modal-form-row">
               <div class="sec-label center">option {i}</div>
@@ -207,6 +214,9 @@
     justify-content: space-between;
     margin-top: 3rem;
     margin-bottom: 3rem;
+  }
+  .options-grid {
+    margin-top: 1rem;
   }
   .header-text {
     font-size: 36px;

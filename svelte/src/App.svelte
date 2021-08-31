@@ -2,12 +2,16 @@
   import { Router, Route } from "svelte-navigator";
   import Home from "./Home.svelte";
   import Experiment from "./Experiment.svelte";
+  import Viz from "./Viz.svelte";
   import Error from "./Error.svelte";
 </script>
 
 <Router primary={false}>
   <Route path="experiment/:key" let:params>
     <Experiment key={params.key} />
+  </Route>
+  <Route path="viz/:key" let:params>
+    <Viz key={params.key} />
   </Route>
   <Route path="/">
     <Home />

@@ -137,12 +137,12 @@
           {/if}
 
           <div id="vis" />
-          <!-- <a
+          <a
             class="link large-screen"
-            href={`${window.location.origin}/private/experiments/${exp.key}/viz`}
+            href={`${window.location.origin}/viz/${exp.key}`}
           >
             open image in new tab →
-          </a> -->
+          </a>
         </div>
         <div class="exp-stats">
           <div class="exp-stat">type: {exp.type}</div>
@@ -154,12 +154,12 @@
           {/if}
         </div>
       </div>
-      <!-- <a
+      <a
         class="link small-screen"
-        href={`${window.location.origin}/private/experiments/${exp.key}/viz`}
+        href={`${window.location.origin}/viz/${exp.key}`}
       >
         open image in new tab →
-      </a> -->
+      </a>
       <div class="api">
         <div class="sampling">
           <div class="tag">sampling</div>
@@ -497,9 +497,9 @@
     color: var(--z1);
   }
 
-  /* a {
+  a {
     color: var(--p1);
-  } */
+  }
   .select-option {
     display: flex;
     flex-direction: row;
@@ -540,7 +540,7 @@
     display: flex;
     justify-content: space-between;
   }
-  /* @media (min-width: 708px) {
+  @media (min-width: 708px) {
     .small-screen {
       display: inherit;
     }
@@ -555,7 +555,7 @@
     .large-screen {
       display: inherit;
     }
-  } */
+  }
   @media only screen and (max-width: 708px) {
     /* .fig {
       width: 390px;
