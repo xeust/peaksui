@@ -327,6 +327,6 @@ def delete_exp(key: str):
     return key
 
 
-@app.delete("/private/consisten_intervention/delete")
+@app.delete("/private/consistent_intervention/delete")
 def delete_consistency(experiment_name: str, user_id: str):
     return experiment_name, user_id

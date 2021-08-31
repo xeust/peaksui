@@ -98,7 +98,7 @@ export const del = async (key) => {
   throw new Error("Failed to delete experiment. Please try again.")
 }
 export const updateConsistency = async (name, user) => {
-  const res = await fetch(`../private/consisten_intervention/delete?experiment_name=${name}&user_id=${user}`, {
+  const res = await fetch(`../private/consistent_intervention/delete?experiment_name=${name}&user_id=${user}`, {
     method: "DELETE"
   })
   if (res.status == 200) {
