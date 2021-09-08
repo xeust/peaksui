@@ -17,7 +17,7 @@
   export let key;
 
   let copySnippetStatus = "copy snippet";
-  let sampleBtn = "try it out!";
+  let sampleBtn = "try it out";
   let sampleValue = "";
   let selected;
   let userId = "";
@@ -61,7 +61,7 @@
       if (id_consistency && userId == "") {
         sampleBtn = "empty user id. please try again!";
         setTimeout(function () {
-          sampleBtn = "try it out!";
+          sampleBtn = "try it out";
 
         }, 3000);
       } else {
@@ -70,14 +70,14 @@
           : await sample(key);
         sampleBtn = "try it out: "
         setTimeout(function () {
-          sampleBtn = "try it out!";
+          sampleBtn = "try it out";
           sampleValue = "";
         }, 3000);
       }
     } catch (error) {
       sampleBtn = "failed to sample option. try again";
       setTimeout(function () {
-        sampleBtn = "try it out!";
+        sampleBtn = "try it out";
       }, 3000);
     }
   }
@@ -198,7 +198,7 @@
               {sampleBtn}
             </div>
             <div>
-              {sampleValue}
+              &nbsp;{sampleValue}
             </div>
             </div>
 
@@ -424,10 +424,11 @@
     background-color: #ffffff;
     border: 1px solid var(--p0);
     color: var(--z2);
+    padding: 4px 8px 4px 8px;
     box-sizing: border-box;
     border-radius: 5px;
     margin-bottom: 1rem;
-    font-size: 18px;
+    font-size: 16px;
     width: fit-content;
   }
   .remove-user-input:focus {
@@ -638,7 +639,7 @@
   .delete-button {
     height: 25px;
     width: 75px;
-
+    margin-left: auto;
     border: 1px solid var(--r0);
     color: var(--z2);
     font-size: 18px;
