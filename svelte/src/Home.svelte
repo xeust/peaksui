@@ -46,8 +46,7 @@
     if (res.status === 200) {
           errMsg = "";
           const bod = await res.json();
-
-          // window.location.href = `/experiment/${bod.key}`;
+          window.location.href = `/experiment/${bod.key}`;
           return;
     }
     errMsg = "Failed to create a new experiment.";
