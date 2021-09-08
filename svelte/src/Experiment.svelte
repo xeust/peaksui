@@ -117,7 +117,7 @@
         <div class="exp-title">
           {exp.name}
         </div>
-        <button on:click={open} tabindex="0"> settings </button>
+        <button on:click={open} tabindex="0" class="settings-button"> settings </button>
       </div>
 
       <div class="exp-sum-tag tag">summary</div>
@@ -608,6 +608,11 @@
       margin-top: 1rem;
     }
   }
+  .settings-button {
+    font-size: 16px;
+    width: 75px;
+    height: 25px;
+  }
   .modal-tag {
     font-size: 36px;
     font-weight: 400;
@@ -642,7 +647,7 @@
     margin-left: auto;
     border: 1px solid var(--r0);
     color: var(--z2);
-    font-size: 18px;
+    font-size: 16px;
     background: #ffffff;
   }
   .delete-button:hover {
