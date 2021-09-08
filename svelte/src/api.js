@@ -56,7 +56,7 @@ export const list = async () => {
 };
 
 export const createBetaBinomial = async (exp) => {
-  const res = await fetch(`../private/experiment/gaussian`, {
+  const res = await fetch(`../private/experiment/beta_binomial`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -65,8 +65,9 @@ export const createBetaBinomial = async (exp) => {
   });
   return res;
 };
+
 export const createGaussian = async (exp) => {
-  const res = await fetch(`../private/experiment/beta_binomial`, {
+  const res = await fetch(`../private/experiment/gaussian`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

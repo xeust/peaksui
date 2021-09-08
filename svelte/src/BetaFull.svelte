@@ -56,11 +56,13 @@
     let rawData = [];
     let absMax = null;
     for (const intervention of interventions) {
-      if (intervention.num_successes != 0 && intervention.num_played != 0) {
+      const { num_successes, num_played, intervention_name } = intervention;
+      if (num_successes !== 0 && num_played !== 0) {
+        const [a, b] = [num_successes, (num_played - num_successes)];
         const { key, x, y, maxY } = createData(
-          intervention.num_successes,
-          intervention.num_played,
-          intervention.intervention_name
+          a,
+          b,
+          intervention_name
         );
         absMax = Math.max(absMax, maxY);
         rawData.push({ key, x, y });

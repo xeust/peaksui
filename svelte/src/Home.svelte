@@ -150,7 +150,7 @@
         </span>
         {:else}
         <div>
-          Every call to <code style="color:var(--r0)">get_intervention</code> will return a randomly drawn sample according to the likelihood of that intervention being optimal.
+          With no id consistency, every call to <code style="color:var(--r0)">get_intervention</code> will return a randomly drawn sample according to the likelihood of that intervention being optimal.
         </div>
         {/if}
         <div class="options">options</div>
