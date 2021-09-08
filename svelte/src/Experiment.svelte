@@ -612,6 +612,8 @@
     font-size: 16px;
     width: 75px;
     height: 25px;
+    text-align: center;
+    padding: 0rem 0.25rem 0rem;
   }
   .modal-tag {
     font-size: 36px;
