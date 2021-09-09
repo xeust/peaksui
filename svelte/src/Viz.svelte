@@ -1,7 +1,7 @@
 <script>
     import Nav from "./Nav.svelte";
     import {get} from "./api.js";
-    import BetaFull from "./BetaFull.svelte"
+    import BetaFig from "./BetaFig.svelte"
     import GaussianFull from "./GaussianFull.svelte";
     export let key;
     let promise = get(key);
@@ -15,7 +15,7 @@
  
         {#if exp.experiment_type === "beta_binomial"}
         <Nav />
-            <BetaFull interventions={exp.interventions}/>
+            <BetaFig width={992} height={700} margin={40} size="l" interventions={exp.interventions}/>
         {:else}
         <Nav />
         <GaussianFull interventions={exp.interventions}/>

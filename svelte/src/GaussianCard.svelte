@@ -109,6 +109,7 @@
       .attr("height", height);
 
     var density = data;
+    console.log(data);
     // color
     var res = density.map(function (d) {
       return d.key;

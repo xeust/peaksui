@@ -102,6 +102,41 @@ exps = [
             "type": "binary",
             "was_updated": False
         },
+            {
+      "experiment_type": "beta_binomial",
+      "id_consistency": False,
+      "interventions": [
+        {
+          "intervention_name": "a",
+          "mean": 0,
+          "std": 1,
+          "sum_x": 0,
+          "sum_x_squared": 0,
+          "trials": 0
+        },
+        {
+          "intervention_name": "b",
+          "mean": 0,
+          "std": 1,
+          "sum_x": 0,
+          "sum_x_squared": 0,
+          "trials": 0
+        },
+        {
+          "intervention_name": "c",
+          "mean": 0,
+          "std": 1,
+          "sum_x": 0,
+          "sum_x_squared": 0,
+          "trials": 0
+        }
+      ],
+      "key": "g10hu3g7280v",
+      "name": "gaussian_inconsistent",
+      "owner_name": "",
+      "type": "beta_binomial",
+      "was_updated": False
+        },
         {
             "experiment_type": "beta_binomial",
             "id_consistency": False,
@@ -180,30 +215,30 @@ def get_experiments():
 @app.get("/private/experiments/{key}")
 def get_exp(key: str):
     list = [{
-        "experiment_type": "beta_binomial",
-        "id_consistency": False,
-        "interventions": [
-            {
-                "intervention_name": "a",
-                "num_played": 22,
-                "num_successes": 46
-            },
-            {
-                "intervention_name": "b",
-                "num_played": 4,
-                "num_successes": 12
-            },
-            {
-                "intervention_name": "c",
-                "num_played": 5,
-                "num_successes": 7
-            }
-        ],
-        "key": "f88ydslgfxru",
-        "name": "beta_binomial_inter_consistencydhdhd",
-        "owner_name": "string",
-        "type": "binary",
-        "was_updated": False
+      "experiment_type": "beta_binomial",
+      "id_consistency": False,
+      "interventions": [
+        {
+          "intervention_name": "a",
+          "num_played": 6,
+          "num_successes": 0
+        },
+        {
+          "intervention_name": "b",
+          "num_played": 5,
+          "num_successes": 3
+        },
+        {
+          "intervention_name": "c",
+          "num_played": 6,
+          "num_successes": 6
+        }
+      ],
+      "key": "6ve8dml1qx90",
+      "name": "beta_3",
+      "owner_name": "string",
+      "type": "beta_binomial",
+      "was_updated": True
     }, {
         "experiment_type": "gaussian",
         "id_consistency": True,

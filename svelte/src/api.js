@@ -48,6 +48,7 @@ export const list = async () => {
     data = data[0];
     for (const exp of data) {
       exp.trials = exp.experiment_type === "beta_binomial" ? sumTrials(exp.interventions) : sumTrialsGaussian(exp.interventions)
+      exp.trials = (isNaN(exp.trials) || exp.trials === undefined) && 0
       exp.arms = exp.interventions.length;
     }
     return data;

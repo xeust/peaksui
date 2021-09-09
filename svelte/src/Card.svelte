@@ -1,5 +1,5 @@
 <script>
-  import BetaCard from "./BetaCard.svelte";
+  import BetaFig from "./BetaFig.svelte";
   import GaussianCard from "./GaussianCard.svelte";
   export let exp;
 
@@ -16,7 +16,7 @@
         alt={exp.key}
       /> -->
       {#if exp.experiment_type === "beta_binomial"}
-        <BetaCard interventions={exp.interventions} />
+        <BetaFig width={150} height={170} margin={20} size="s" interventions={exp.interventions} />
       {:else}
         <GaussianCard interventions={exp.interventions} />
       {/if}
