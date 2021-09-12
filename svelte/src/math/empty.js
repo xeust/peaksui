@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 export function gamma(x) {
     return (
         Math.sqrt((2 * Math.PI) / x) *
@@ -40,34 +41,21 @@ export function scaleData(rawData, xScale, yScale) {
     }
     return data;
 }
-export function generate(interventions) {
+
+export const emptyData = (height, width, margin) => {
     let rawData = [];
-    let absMax = null;
-    for (const intervention of interventions) {
-        const { num_successes, num_played, intervention_name } = intervention;
-        if (num_played !== 0) {
-            const [a, b] = [num_successes, (num_played - num_successes)];
-            
-            const { key, x, y, maxY } = createData(
-                a + 1,
-                b + 2,
-                intervention_name
-            );
-            absMax = Math.max(absMax, maxY);
-            if (!b) {
-                x.push(1)
-                y.push(0)
-                absMax = Math.max(absMax, 0);
-            }
-            rawData.push({ key, x, y });
-        }
-    }
-    if (rawData.length === 0) {
-        let { key, x, y, maxY } = createData(3, 3, "not enough data");
-        absMax = maxY;
-        rawData.push({ key, x, y });
-    }
+    let { key, x, y, maxY } = createData(3, 3, "not enough data");
 
-    return {rawData, absMax}
-}
+    rawData.push({ key, x, y });
 
+   let xScale = d3
+    .scaleLinear()
+    .domain([0, 1])
+    .range([0 + margin, width - margin]);
+  let yScale = d3
+    .scaleLinear()
+    .range([0 + margin, height - margin])
+    .domain([maxY, 0]);
+
+ return scaleData(rawData, xScale, yScale);
+} 

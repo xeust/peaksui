@@ -49,6 +49,7 @@
       "#999999",
     ]);
         if (data.length === 1 && data[0].key === "not enough data") {
+        console.log("empty", data);
       color = d3.scaleOrdinal().domain(["not enough data"]).range(["#999999"]);
       empty = true;
     }

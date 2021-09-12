@@ -102,41 +102,6 @@ exps = [
             "type": "binary",
             "was_updated": False
         },
-            {
-      "experiment_type": "beta_binomial",
-      "id_consistency": False,
-      "interventions": [
-        {
-          "intervention_name": "a",
-          "mean": 0,
-          "std": 1,
-          "sum_x": 0,
-          "sum_x_squared": 0,
-          "trials": 0
-        },
-        {
-          "intervention_name": "b",
-          "mean": 0,
-          "std": 1,
-          "sum_x": 0,
-          "sum_x_squared": 0,
-          "trials": 0
-        },
-        {
-          "intervention_name": "c",
-          "mean": 0,
-          "std": 1,
-          "sum_x": 0,
-          "sum_x_squared": 0,
-          "trials": 0
-        }
-      ],
-      "key": "g10hu3g7280v",
-      "name": "gaussian_inconsistent",
-      "owner_name": "",
-      "type": "beta_binomial",
-      "was_updated": False
-        },
         {
             "experiment_type": "beta_binomial",
             "id_consistency": False,
@@ -173,7 +138,7 @@ exps = [
                 "std": 0.33447720400649056,
                 "sum_x": 9.9,
                 "sum_x_squared": 24.95,
-                "trials": 6
+                "trials": 4
             },
             {
                 "intervention_name": "b",
@@ -181,7 +146,7 @@ exps = [
                 "std": 0.36,
                 "sum_x": 7.9,
                 "sum_x_squared": 13.15,
-                "trials": 5
+                "trials": 4
             },
             {
                 "intervention_name": "c",
@@ -249,7 +214,7 @@ def get_exp(key: str):
                 "std": 0.33447720400649056,
                 "sum_x": 9.9,
                 "sum_x_squared": 24.95,
-                "trials": 6
+                "trials": 4
             },
             {
                 "intervention_name": "b",
@@ -257,7 +222,7 @@ def get_exp(key: str):
                 "std": 0.36,
                 "sum_x": 7.9,
                 "sum_x_squared": 13.15,
-                "trials": 5
+                "trials": 4
             },
             {
                 "intervention_name": "c",

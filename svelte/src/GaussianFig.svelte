@@ -1,17 +1,15 @@
 <script>
-  import { onMount } from "svelte";
   import * as d3 from "d3";
-  import {generate} from "./math/gaussian"
+  import { generate } from "./math/gaussian";
+  import {emptyData} from "./math/empty";
   let g;
   let tooltip;
-
-  
 
   export let width = 450,
     height = 360,
     margin = 40;
   let color;
-  export let size = "m"
+  export let size = "m";
 
   export let interventions = [
     { intervention_name: "one", mean: 1, std: 1 },
@@ -19,10 +17,16 @@
   ];
 
   let empty;
-  
 
-
-  $: data = generate(interventions, -3.0, 3.1, width, height, margin)
+  $: ({ data, xScale } = generate(
+    interventions,
+    -3.0,
+    3.1,
+    width,
+    height,
+    margin
+  ));
+  $: console.log(data);
   $: {
     color = d3
       .scaleOrdinal()
@@ -42,20 +46,21 @@
         "#f781bf",
         "#999999",
       ]);
-    if (data.length === 1 && data[0].key === "not enough data") {
+    if (data.length === 0 ) {
+      data = emptyData(height, width, margin);
       color = d3.scaleOrdinal().domain(["not enough data"]).range(["#999999"]);
       empty = true;
     }
   }
   $: {
     d3.select(g).selectAll("*").remove();
-    // d3.select(g)
-    //   .attr("transform", "translate(0," + (height - margin) + ")")
-    //   .call(d3.axisBottom(xScale))
-    //   .append("text")
-    //   .attr("fill", "black") //set the fill here
-    //   .attr("transform", "translate(" + width / 2 + ", 30)")
-    //   .style("font-weight", "bold");
+    d3.select(g)
+      .attr("transform", "translate(0," + (height - margin) + ")")
+      .call(d3.axisBottom(xScale))
+      .append("text")
+      .attr("fill", "black") //set the fill here
+      .attr("transform", "translate(" + width / 2 + ", 30)")
+      .style("font-weight", "bold");
   }
 
   const handleMouseOver = function (d) {
@@ -91,7 +96,6 @@
     {/if}
     {#each data as dot}
       <!-- svelte-ignore a11y-mouse-events-have-key-events -->
-
       <path
         fill={color(dot.key)}
         stroke={color(dot.key)}
@@ -115,24 +119,50 @@
 </div>
 
 <style>
-  div {
+  .tooltip {
+    opacity: 0;
+    position: absolute;
+    font-weight: bold;
+    background-color: transparent;
+  }
+  .s {
+    width: 150px;
+    height: 170px;
+  }
+  .l {
+    width: 992px;
+    height: 700px;
+  }
+  @media only screen and (max-width: 992px) {
+    .l {
+      width: 98vw;
+      height: 60vh;
+    }
+  }
+  @media only screen and (max-width: 650px) {
+    .l {
+      width: 98vw;
+      height: 60vh;
+    }
+  }
+  .m {
     width: 450px;
     height: 356px;
   }
   @media only screen and (max-width: 708px) {
-    div {
+    .m {
       width: 390px;
       height: 356px;
     }
   }
   @media only screen and (min-width: 709px) {
-    div {
+    .m {
       width: 450px;
       height: 356px;
     }
   }
   @media only screen and (max-width: 400px) {
-    div {
+    .m {
       width: 85vw;
       height: 273px;
     }

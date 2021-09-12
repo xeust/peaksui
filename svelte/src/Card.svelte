@@ -1,6 +1,6 @@
 <script>
   import BetaFig from "./BetaFig.svelte";
-  import GaussianCard from "./GaussianCard.svelte";
+  import GaussianFig from "./GaussianFig.svelte";
   export let exp;
 
   function goToExp() {
@@ -18,7 +18,7 @@
       {#if exp.experiment_type === "beta_binomial"}
         <BetaFig width={150} height={170} margin={20} size="s" interventions={exp.interventions} />
       {:else}
-        <GaussianCard interventions={exp.interventions} />
+        <GaussianFig width={150} height={170} margin={20} size="s" interventions={exp.interventions} />
       {/if}
     </div>
     <div class="info">

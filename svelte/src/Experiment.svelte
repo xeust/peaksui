@@ -9,26 +9,40 @@
     del,
     getInterventionMean,
     getInterventionStd,
+    getNumPlayed,
+    getNumSuccesses,
     updateConsistency,
   } from "./api.js";
+
   import Nav from "./Nav.svelte";
   import BetaFig from "./BetaFig.svelte";
   import GaussianFig from "./GaussianFig.svelte";
   export let key;
 
   let copySnippetStatus = "copy snippet";
+  
   let sampleBtn = "try it out";
+  
   let sampleValue = "";
+  
   let selected;
+  
   let userId = "";
+  
   let userConsistencyId = "";
   let deleteExperiment = false;
   let removeConsistency = false;
+
   let deleteErrMsg = "";
   let removeErrMsg = "";
+  
   let promise = get(key);
-  let language = "PY";
+
+  let language = "JS";
+
   let isOpen;
+  
+  let copySampleUrlStatus = "copy url"
 
 
   const open = () => {
@@ -52,6 +66,22 @@
       copySnippetStatus = "failed to copy. try again";
       setTimeout(function () {
         copySnippetStatus = "copy snippet";
+      }, 3000);
+    }
+  }
+
+  async function copySampleUrl (consistency) {
+    const url = consistency ? `${window.location.origin}/public/experiments/{exp.key}/get_intervention?user_id=${userId}` : `${window.location.origin}/public/experiments/{exp.key}/get_intervention`
+    try {
+      const isCopied = await navigator.clipboard.writeText(url);
+      copySampleUrlStatus = "copied!";
+      setTimeout(function () {
+        copySampleUrlStatus = "copy url";
+      }, 3000);
+    } catch (error) {
+      copySampleUrlStatus = "failed to copy url. please try again";
+      setTimeout(function () {
+        copySampleUrlStatus = "copy url";
       }, 3000);
     }
   }
@@ -177,12 +207,15 @@
 
             <div class="code inline-code" tabindex="0">
               {#if exp.id_consistency}
+
                 {window.location
-                  .origin}/public/experiments/{exp.key}/get_intervention?user_id=
+                  .origin}/public/experiments/{exp.key}/get_intervention?user_id= 
+
                 <input
                   type="text"
                   class="user_id"
                   name="user_id"
+                  placeholder="enter user id"
                   bind:value={userId}
                 />
               {:else}
@@ -191,14 +224,21 @@
               {/if}
             </div>
             <div class="row">
-              <div
-              class="sample_btn link"
-              on:click={() => sampleHandler(exp.key, exp.id_consistency)}
-            >
-              {sampleBtn}
-            </div>
-            <div>
-              &nbsp;{sampleValue}
+              <div style="display:flex; flex-direction: row">
+                <div
+                class="sample_btn link"
+                on:click={() => sampleHandler(exp.key, exp.id_consistency)}
+              >
+                {sampleBtn}
+              </div>
+              <div>
+                &nbsp;{sampleValue}
+              </div>
+              </div>
+              
+            <div class="sample_btn link" on:click={()=> copySampleUrl(exp.id_consistency)}>
+
+              {copySampleUrlStatus}
             </div>
             </div>
 
@@ -233,6 +273,15 @@
                   standard deviation: {Number.parseFloat(
                     getInterventionStd(exp.interventions, selected)
                   ).toFixed(3)}
+                {:else}
+                num played: {
+                  getNumPlayed(exp.interventions, selected)
+                }
+              
+                <br />
+                num_successes: {
+                  getNumSuccesses(exp.interventions, selected)
+                }
                 {/if}
               </div>
               <div class="info">
@@ -393,6 +442,7 @@
   font-size: 14px;
   font-weight: 400;
   flex-direction: row;
+  justify-content: space-between;
 }
   .copy-button {
     width: auto;
@@ -474,6 +524,7 @@
   .inline-code {
     padding: 0.5rem;
     overflow-wrap: break-word;
+
   }
   .user_id {
     border: none;
@@ -482,6 +533,9 @@
     background-color: #ffffff;
     color: var(--z2);
     margin-left: -7px;
+  }
+  .user_id:focus {
+    color: var(--z0);
   }
   .options {
     margin-top: 3rem;

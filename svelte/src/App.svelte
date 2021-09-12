@@ -3,7 +3,7 @@
   import Home from "./Home.svelte";
   import Experiment from "./Experiment.svelte";
   import Viz from "./Viz.svelte";
-  import Error from "./Error.svelte";
+
 </script>
 
 <Router primary={false}>
@@ -17,7 +17,7 @@
     <Home />
   </Route>
   <Route path="/*">
-    <Error />
+    <code >404 Not Found </code>
   </Route>
 
 </Router>
@@ -96,6 +96,10 @@
     border-radius: 5px;
   }
   :global(.code:focus) {
+    border: 1px solid var(--p1);
+    color: var(--z0);
+  }
+  :global(.code:focus-within) {
     border: 1px solid var(--p1);
     color: var(--z0);
   }

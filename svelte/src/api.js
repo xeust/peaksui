@@ -25,6 +25,22 @@ export const armProbability = (interventions, intervention_name) => {
     }
   }
 };
+export const getNumPlayed = (interventions, intervention_name) => {
+  for (const intervention of interventions) {
+    if (intervention_name === intervention.intervention_name) {
+      console.log(intervention)
+      return intervention.num_played
+    }
+  }
+};
+export const getNumSuccesses = (interventions, intervention_name) => {
+  for (const intervention of interventions) {
+    if (intervention_name === intervention.intervention_name) {
+      console.log(intervention)
+      return intervention.num_successes
+    }
+  }
+};
 
 export const getInterventionMean = (interventions, intervention_name) => {
   for (const intervention of interventions) {
@@ -48,7 +64,9 @@ export const list = async () => {
     data = data[0];
     for (const exp of data) {
       exp.trials = exp.experiment_type === "beta_binomial" ? sumTrials(exp.interventions) : sumTrialsGaussian(exp.interventions)
-      exp.trials = (isNaN(exp.trials) || exp.trials === undefined) && 0
+      if (isNaN(exp.trials) || exp.trials === undefined) {
+        exp.trials = 0
+      }
       exp.arms = exp.interventions.length;
     }
     return data;

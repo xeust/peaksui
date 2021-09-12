@@ -2,7 +2,7 @@
     import Nav from "./Nav.svelte";
     import {get} from "./api.js";
     import BetaFig from "./BetaFig.svelte"
-    import GaussianFull from "./GaussianFull.svelte";
+    import GaussianFig from "./GaussianFig.svelte";
     export let key;
     let promise = get(key);
 </script>
@@ -18,7 +18,7 @@
             <BetaFig width={992} height={700} margin={40} size="l" interventions={exp.interventions}/>
         {:else}
         <Nav />
-        <GaussianFull interventions={exp.interventions}/>
+        <GaussianFig width={992} height={700} margin={40} size="l" interventions={exp.interventions} />
         {/if}
     {:catch error}
     <Nav />
