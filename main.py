@@ -214,7 +214,7 @@ def get_exp(key: str):
                 "std": 0.33447720400649056,
                 "sum_x": 9.9,
                 "sum_x_squared": 24.95,
-                "trials": 4
+                "trials": 5
             },
             {
                 "intervention_name": "b",
@@ -222,7 +222,7 @@ def get_exp(key: str):
                 "std": 0.36,
                 "sum_x": 7.9,
                 "sum_x_squared": 13.15,
-                "trials": 4
+                "trials": 6
             },
             {
                 "intervention_name": "c",
