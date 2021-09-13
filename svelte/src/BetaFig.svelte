@@ -16,8 +16,8 @@
   let tooltip;
   let g;
   let { rawData, absMax } = generate(interventions);
-  
-  let color; 
+
+  let color;
   let empty;
 
   $: xScale = d3
@@ -29,27 +29,28 @@
     .range([0 + margin, height - margin])
     .domain([absMax, 0]);
   $: data = scaleData(rawData, xScale, yScale);
+
   $: {
     color = d3
-    .scaleOrdinal()
-    .domain(
-      data.map(function (d) {
-        return d.key;
-      })
-    )
-    .range([
-      "#e41a1c",
-      "#377eb8",
-      "#4daf4a",
-      "#984ea3",
-      "#ff7f00",
-      "#ffff33",
-      "#a65628",
-      "#f781bf",
-      "#999999",
-    ]);
-        if (data.length === 1 && data[0].key === "not enough data") {
-        console.log("empty", data);
+      .scaleOrdinal()
+      .domain(
+        data.map(function (d) {
+          return d.key;
+        })
+      )
+      .range([
+        "#e41a1c",
+        "#377eb8",
+        "#4daf4a",
+        "#984ea3",
+        "#ff7f00",
+        "#ffff33",
+        "#a65628",
+        "#f781bf",
+        "#999999",
+      ]);
+    if (data.length === 1 && data[0].key === "not enough data") {
+      console.log("empty", data);
       color = d3.scaleOrdinal().domain(["not enough data"]).range(["#999999"]);
       empty = true;
     }
@@ -88,18 +89,38 @@
     {#if size !== "s"}
       <g class="axis" bind:this={g} />
     {/if}
-    {#if size === "s" && empty} 
-    <text fill="#999999" transform={`translate(38, 165)`} style="font-size: 10px;">
-      not enough data
-    </text>
+    {#if size === "s" && empty}
+      <text
+        fill="#999999"
+        transform={`translate(38, 165)`}
+        style="font-size: 10px;"
+      >
+        not enough data
+      </text>
     {/if}
     {#each data as dot}
       <!-- svelte-ignore a11y-mouse-events-have-key-events -->
       <path
         fill={color(dot.key)}
+        fill-opacity="0"
+        d={d3
+          .area()
+          .x(function (d) {
+            return d[0];
+          })
+          .y0(yScale(0))
+          .y1(function (d) {
+            return d[1];
+          })(dot.values)}
+        on:mouseover={size !== "s" && handleMouseOver}
+        on:mousemove={size !== "s" && (() => handleMouseMove(dot))}
+        on:mouseleave={size !== "s" && handleMouseLeave}
+      />
+
+       <path
+        fill="none"
         stroke={color(dot.key)}
         stroke-width="2"
-        fill-opacity="0"
         d={d3
           .line()
           .x(function (d) {
@@ -108,10 +129,7 @@
           .y(function (d) {
             return d[1];
           })(dot.values)}
-        on:mouseover={size !== "s" && handleMouseOver}
-        on:mousemove={size !== "s" && (() => handleMouseMove(dot))}
-        on:mouseleave={size !== "s" && handleMouseLeave}
-      />
+      /> 
     {/each}
   </svg>
   <div bind:this={tooltip} class="tooltip" />
