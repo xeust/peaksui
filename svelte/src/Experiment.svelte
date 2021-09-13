@@ -20,30 +20,29 @@
   export let key;
 
   let copySnippetStatus = "copy snippet";
-  
+
   let sampleBtn = "try it out";
-  
+
   let sampleValue = "";
-  
+
   let selected;
-  
+
   let userId = "";
-  
+
   let userConsistencyId = "";
   let deleteExperiment = false;
   let removeConsistency = false;
 
   let deleteErrMsg = "";
   let removeErrMsg = "";
-  
+
   let promise = get(key);
 
   let language = "JS";
 
   let isOpen;
-  
-  let copySampleUrlStatus = "copy url"
 
+  let copySampleUrlStatus = "copy url";
 
   const open = () => {
     isOpen = true;
@@ -70,8 +69,10 @@
     }
   }
 
-  async function copySampleUrl (consistency) {
-    const url = consistency ? `${window.location.origin}/public/experiments/{exp.key}/get_intervention?user_id=${userId}` : `${window.location.origin}/public/experiments/{exp.key}/get_intervention`
+  async function copySampleUrl(consistency, key) {
+    const url = consistency
+      ? `${window.location.origin}/public/experiments/${key}/get_intervention?user_id=${userId}`
+      : `${window.location.origin}/public/experiments/${key}/get_intervention`;
     try {
       const isCopied = await navigator.clipboard.writeText(url);
       copySampleUrlStatus = "copied!";
@@ -92,13 +93,12 @@
         sampleBtn = "empty user id. please try again!";
         setTimeout(function () {
           sampleBtn = "try it out";
-
         }, 3000);
       } else {
         sampleValue = id_consistency
           ? await sample(key, userId)
           : await sample(key);
-        sampleBtn = "try it out: "
+        sampleBtn = "try it out: ";
         setTimeout(function () {
           sampleBtn = "try it out";
           sampleValue = "";
@@ -147,7 +147,9 @@
         <div class="exp-title">
           {exp.name}
         </div>
-        <button on:click={open} tabindex="0" class="settings-button"> settings </button>
+        <button on:click={open} tabindex="0" class="settings-button">
+          settings
+        </button>
       </div>
 
       <div class="exp-sum-tag tag">summary</div>
@@ -207,9 +209,10 @@
 
             <div class="code inline-code" tabindex="0">
               {#if exp.id_consistency}
-
-                {window.location
-                  .origin}/public/experiments/{exp.key}/get_intervention?user_id= 
+                <div class="sample_url">
+                  {window.location
+                    .origin}/public/experiments/{exp.key}/get_intervention?user_id=
+                </div>
 
                 <input
                   type="text"
@@ -224,24 +227,25 @@
               {/if}
             </div>
             <div class="row">
-              <div style="display:flex; flex-direction: row">
+              <div class="sample_section">
                 <div
-                class="sample_btn link"
-                on:click={() => sampleHandler(exp.key, exp.id_consistency)}
+                  class="sample_btn link"
+                  on:click={() => sampleHandler(exp.key, exp.id_consistency)}
+                >
+                  {sampleBtn}
+                </div>
+                <div>
+                  &nbsp;{sampleValue}
+                </div>
+              </div>
+
+              <button
+                class="link copy-button"
+                on:click={() => copySampleUrl(exp.id_consistency, exp.key)}
               >
-                {sampleBtn}
-              </div>
-              <div>
-                &nbsp;{sampleValue}
-              </div>
-              </div>
-              
-            <div class="sample_btn link" on:click={()=> copySampleUrl(exp.id_consistency)}>
-
-              {copySampleUrlStatus}
+                {copySampleUrlStatus}
+              </button>
             </div>
-            </div>
-
           </div>
         </div>
         <div class="options">
@@ -274,14 +278,13 @@
                     getInterventionStd(exp.interventions, selected)
                   ).toFixed(3)}
                 {:else}
-                num played: {
-                  getNumPlayed(exp.interventions, selected)
-                }
-              
-                <br />
-                num_successes: {
-                  getNumSuccesses(exp.interventions, selected)
-                }
+                  number played: {getNumPlayed(exp.interventions, selected)}
+
+                  <br />
+                  number successes: {getNumSuccesses(
+                    exp.interventions,
+                    selected
+                  )}
                 {/if}
               </div>
               <div class="info">
@@ -436,20 +439,20 @@
     margin-top: 2.5rem;
     margin-bottom: 1.5rem;
   }
-.row{
-  margin-top: 1rem;
-  display:flex;
-  font-size: 14px;
-  font-weight: 400;
-  flex-direction: row;
-  justify-content: space-between;
-}
+  .row {
+    display: flex;
+    font-size: 14px;
+    font-weight: 400;
+    flex-direction: row;
+    justify-content: space-between;
+  }
   .copy-button {
     width: auto;
     height: auto;
     border: none;
     background-color: var(--color-bg);
     padding: 0rem;
+    align-self: flex-start;
   }
   .copy-button:focus {
     border: 1px solid var(--p1);
@@ -523,8 +526,19 @@
   }
   .inline-code {
     padding: 0.5rem;
+    display: flex;
+    width: 100%;
+    -webkit-box-align: center;
+    align-items: center;
     overflow-wrap: break-word;
-
+  }
+  .sample_url {
+    -webkit-box-flex: 0;
+    flex-grow: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
   }
   .user_id {
     border: none;
@@ -532,7 +546,12 @@
     font-family: monospace;
     background-color: #ffffff;
     color: var(--z2);
-    margin-left: -7px;
+    font-style: italic;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0px;
+    -webkit-box-flex: 1;
+    flex-grow: 1;
   }
   .user_id:focus {
     color: var(--z0);
@@ -551,7 +570,10 @@
     width: 400px;
     color: var(--z1);
   }
-
+  .sample_section {
+    display: flex;
+    flex-direction: row;
+  }
   a {
     color: var(--p1);
   }
