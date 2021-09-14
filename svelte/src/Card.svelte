@@ -67,6 +67,7 @@
     display: flex;
     flex-direction: column;
     color: var(--z2);
+    background-color: #ffffff;
   }
   .card-border:hover {
     cursor: pointer;
@@ -78,7 +79,7 @@
   .arrow {
     width: auto;
     height: auto;
-    background: var(--color-bg);
+    background-color: #ffffff;
     border: none;
     padding: 0rem;
   }
