@@ -50,15 +50,10 @@ export function generate(interventions) {
             
             const { key, x, y, maxY } = createData(
                 a + 1,
-                b + 2,
+                b + 1,
                 intervention_name
             );
             absMax = Math.max(absMax, maxY);
-            if (!b) {
-                x.push(1)
-                y.push(0)
-                absMax = Math.max(absMax, 0);
-            }
             rawData.push({ key, x, y });
         }
     }

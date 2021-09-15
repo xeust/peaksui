@@ -28,7 +28,7 @@ export const armProbability = (interventions, intervention_name) => {
 export const getNumPlayed = (interventions, intervention_name) => {
   for (const intervention of interventions) {
     if (intervention_name === intervention.intervention_name) {
-      console.log(intervention)
+
       return intervention.num_played
     }
   }
@@ -36,7 +36,7 @@ export const getNumPlayed = (interventions, intervention_name) => {
 export const getNumSuccesses = (interventions, intervention_name) => {
   for (const intervention of interventions) {
     if (intervention_name === intervention.intervention_name) {
-      console.log(intervention)
+
       return intervention.num_successes
     }
   }

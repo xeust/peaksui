@@ -46,8 +46,8 @@
 
   const open = () => {
     isOpen = true;
-    // required console.log to remove blur on button
-    console.log(document.activeElement.blur());
+    // required to remove blur on button
+    document.activeElement.blur();
   };
   const close = () => {
     isOpen = false;
@@ -222,8 +222,11 @@
                   bind:value={userId}
                 />
               {:else}
+              <div class="sample_url">
                 {window.location
                   .origin}/public/experiments/{exp.key}/get_intervention
+              </div>
+
               {/if}
             </div>
             <div class="row">

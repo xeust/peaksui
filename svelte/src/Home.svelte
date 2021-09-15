@@ -26,8 +26,8 @@
 
   const open = () => {
     isOpen = true;
-    // required console.log to remove blur on button
-    console.log(document.activeElement.blur());
+    // required to remove blur on button
+    document.activeElement.blur();
   };
   const close = () => {
     isOpen = false;

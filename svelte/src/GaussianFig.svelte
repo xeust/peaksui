@@ -26,7 +26,6 @@
     height,
     margin
   ));
-  $: console.log(data);
   $: {
     color = d3
       .scaleOrdinal()

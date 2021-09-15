@@ -195,8 +195,18 @@ def get_exp(key: str):
         },
         {
           "intervention_name": "c",
+          "num_played": 13,
+          "num_successes": 11
+        },
+        {
+          "intervention_name": "d",
           "num_played": 6,
           "num_successes": 6
+        },
+                {
+          "intervention_name": "e",
+          "num_played": 9,
+          "num_successes": 8
         }
       ],
       "key": "6ve8dml1qx90",
