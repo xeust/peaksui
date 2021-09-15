@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import jStat from "jstat";
 
 const interval = 0.05;
 
