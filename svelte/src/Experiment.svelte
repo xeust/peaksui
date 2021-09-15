@@ -305,8 +305,8 @@
               </div>
               <div class="code-actions">
                 <select bind:value={language}>
-                  <option value="PY"> python </option>
                   <option value="JS"> javascript </option>
+                  <option value="PY"> python </option>
                 </select>
                 <button
                   class="link copy-button"

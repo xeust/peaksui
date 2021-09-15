@@ -193,7 +193,7 @@ export const codeSnippet = (key, arm, language) => {
   const pySnippet = `import requests as r
 import json
 
-req = r.post('${window.location.origin}/public/update',
+req = r.post('${window.location.origin}/public/experiments/update',
     body=json.loads({
     'key': '${key}',
     'arm_name': '${arm}',
